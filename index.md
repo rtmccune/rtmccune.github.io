@@ -89,12 +89,12 @@ title: Home
     <img src="/assets/profile.jpg" alt="Aris Thorne Profile Photo">
   </div>
   <div class="profile-text">
-    <h1>Hello! I'm Aris Thorne</h1>
-    <p>I am a PhD Candidate in Environmental Engineering at Westeros University, developing novel remote sensing technologies for real-time water quality monitoring. My research combines field robotic chemistry, and machine learning to address emerging environmental challenges in freshwater ecosystems.</p>
+    <h1>Hello! I'm Ryan McCune</h1>
+    <p>I am a PhD Student in Civil Engineering at North Carolina State University, focusing in Coastal Engineering. My research combines machine learning, numerical modeling, and in-situ data collection to address chronic coastal flooding.</p>
     <p class="social-links">
-      <a href="mailto:aris.thorne@westeros.edu">aris.thorne@westeros.edu</a>
-      <a href="https://linkedin.com/in/aristhorne" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://scholar.google.com/citations?user=xyz..." target="_blank" rel="noopener noreferrer">Google Scholar</a>
+      <a href="mailto:rmccune@ncsu.edu">aris.thorne@westeros.edu</a>
+      <a href="https://linkedin.com/in/ryan-mccune" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener noreferrer">Google Scholar</a>
     </p>
   </div>
 </div>

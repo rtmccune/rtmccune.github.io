@@ -14,7 +14,7 @@ plugins:
 # Social links
 github_username: rtmccune # Replace with your GitHub username
 linkedin_username: ryan-mccune # Replace with your LinkedIn profile part
-scholar_id: citations?hl=en&view_op=list_works&gmla=AKzYXQ2SJlVUul_UmsAeFCada9EKSv1gk9GK63K58nerq-NmbDA2NqetRt77VuB1ohMwi_eqHVaRpuJrzpi2Ag&user=CnYIFHQAAAAJ # Replace with your Google Scholar ID
+scholar_id: citations?user=CnYIFHQAAAAJ&hl=en&oi=ao # Replace with your Google Scholar ID
 
 # Navigation (matches the example visual)
 header_pages:
