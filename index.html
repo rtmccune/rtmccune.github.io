@@ -4,20 +4,532 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ryan McCune - PhD Student</title>
-    <link rel="icon" type="image/x-icon" href="assets/coastal-hazard.ico">
-    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* --- COPY OF YOUR STYLE.CSS --- */
+        
+        /* Basic Setup */
+        :root {
+            --sidebar-width: 300px;
+            --main-bg: #fdfdfd;
+            --sidebar-bg: #7f93a9;
+            --text-color: #000000;
+            --link-color: #8C7D61;
+            --border-color: #9CA3AA;
+        }
+
+        /* Smooth scrolling for anchor links */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background-color: var(--main-bg);
+            color: var(--text-color);
+        }
+
+        /* --- Sidebar Styling --- */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 1000; /* Ensure sidebar stays on top */
+        }
+
+        #sidebar header {
+            margin-bottom: 2rem;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+
+        #sidebar h1 {
+            margin: 0.5rem 0 0.25rem;
+            font-size: 1.75rem;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+
+        #sidebar p {
+            font-size: 1rem;
+            color: #e0e0e0;
+        }
+
+        .pronouns {
+            font-size: 0.9rem;
+            font-weight: 400;
+            font-style: italic;
+            color: #d0d0d0;
+            margin-left: 0rem;
+        }
+
+        /* Nav Links */
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .nav-links li {
+            margin: 1.25rem 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--link-color);
+        }
+
+        /* Social Links */
+        .social-links {
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            font-size: 1.5rem;
+            margin: 0 0.75rem;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            color: var(--link-color);
+        }
+
+        /* --- Main Content Styling --- */
+        #content {
+            margin-left: var(--sidebar-width); 
+            padding: 0 0 3rem 0;
+        }
+
+        #content section {
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 4rem;
+            padding: 1rem 3rem 2rem 3rem; 
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        a {
+            color: var(--link-color);
+        }
+
+        /* --- Banner Image Styling --- */
+        .banner-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            margin-bottom: 2rem;
+        }
+
+        /* --- TOGGLE SWITCH STYLING (NEW) --- */
+        .about-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; /* Aligns switch with bottom of H2 text */
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Override standard H2 in this container to remove its individual border */
+        .about-header h2 {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+
+        .bio-switch-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            padding-bottom: 5px; /* Alignment adjustment */
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--sidebar-bg); /* Use your theme color */
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--sidebar-bg);
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(24px);
+            -ms-transform: translateX(24px);
+            transform: translateX(24px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Logic classes */
+        .hidden-text {
+            display: none;
+        }
+        
+        /* Fade animation for smoother toggle */
+        .bio-text {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+
+        /* --- Project Card Grid --- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .project-card img,
+        .project-card video {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .project-card h3 {
+            font-size: 1.25rem;
+            margin: 1rem 1.5rem 0.5rem;
+        }
+
+        .project-card p {
+            margin: 0 1.5rem 1rem;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .project-card p:last-child {
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Parallax "Cutout" Window --- */
+        .parallax-window {
+            height: 200px; 
+            /* Placeholder background for the demo */
+            background-color: #7f93a9;
+            background-image: url('assets/banner_image.jpg');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 4rem 0 1rem 0;
+        }
+
+        .parallax-window:first-child {
+            height: 500px;
+            margin-top: 0;
+        }
+
+        /* --- Contact Section --- */
+        #content #contact {
+            max-width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('assets/banner_image.jpg');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding: 6rem 2rem; 
+            margin-bottom: 0; 
+        }
+
+        .contact-card {
+            background-color: #9CA3AA;
+            color: #f1f1f1;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .contact-card h2 {
+            border-bottom-color: #666; 
+            color: #ffffff;
+        }
+
+        .contact-card a {
+            color: #9cdbff;
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #666;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #f1f1f1;
+        }
+
+        /* --- News Reel Styling --- */
+        .news-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .news-reel {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            gap: 1.5rem;
+            padding: 1rem 0.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .news-reel {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .news-reel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .news-card {
+            min-width: 300px;
+            max-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card img, 
+        .news-card video {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .news-content {
+            padding: 0;
+        }
+
+        .news-card h3 {
+            font-size: 1.1rem;
+            margin: 1rem 1rem 0.5rem 1rem;
+        }
+
+        .news-card p {
+            margin: 0 1rem 1rem 1rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .scroll-btn {
+            background-color: var(--sidebar-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .scroll-btn:hover {
+            background-color: var(--link-color);
+        }
+
+        .left-btn {
+            left: -20px;
+        }
+
+        .right-btn {
+            right: -20px;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            #sidebar {
+                position: static; 
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 2rem 0;
+            }
+
+            #content section {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .banner-image {
+                height: 200px;
+                margin-bottom: 1rem;
+            }
+
+            .parallax-window, #content #contact {
+                background-attachment: scroll; 
+            }
+            
+            .parallax-window {
+                margin: 2rem 0;
+            }
+            
+            #content #contact {
+                padding: 3rem 1rem;
+            }
+
+            .scroll-btn {
+                display: none;
+            }
+            
+            .news-wrapper {
+                margin: 0 -1.5rem;
+            }
+
+            .news-reel {
+                padding: 1rem 2rem;
+            }
+            
+            .news-card {
+                min-width: 280px;
+            }
+
+            /* Stack the toggle below the title on very small screens */
+            .about-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <nav id="sidebar">
         <header>
-            <img src="assets/headshot.png" alt="Ryan McCune Headshot" class="profile-pic">
+            <img src="assets/headshot.png" alt="Ryan McCune Headshot" class="profile-pic" onerror="this.src='https://via.placeholder.com/150'">
             <h1>Ryan McCune <small class="pronouns">he/him</small></h1>
             <p>PhD Student - Coastal Engineer</p>
         </header>
 
         <ul class="nav-links">
+            <li><a href="#news">In The News</a></li>
             <li><a href="#research">Research</a></li>
             <li><a href="dashboard.html">Data Dashboard</a></li>
             <li><a href="assets/RyanMcCune.pdf">CV</a></li>
@@ -26,24 +538,113 @@
 
         <footer class="social-links">
             <a href="mailto:rmccune@ncsu.edu" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
-
             <a href="https://github.com/rtmccune" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-
             <a href="https://www.linkedin.com/in/ryan-mccune" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-
             <a href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
         </footer>
     </nav>
 
     <main id="content">
         
-        <!-- <img src="assets/banner_image.jpg" alt="Coastal Flooding banner image" class="banner-image"> -->
         <div class="parallax-window"></div>
 
         <section id="about">
-            <h2>About Me</h2>
-            <p>I am a coastal engineer focusing on numerical modeling and applied machine learning to study the impact of sea-level rise driven flooding on coastal communities.</p>
-            <p>I earned Bachelor's degrees in Civil Engineering and Environmental Engineering at the University of Delaware. I am currently a PhD student on the Coastal Hazards Lab at North Carolina State University.</p>
+            <!-- Modified Header Area with Toggle -->
+            <div class="about-header">
+                <h2>About Me</h2>
+                <div class="bio-switch-container">
+                    <span>1st Person</span>
+                    <label class="switch">
+                        <input type="checkbox" id="bioToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>3rd Person</span>
+                </div>
+            </div>
+
+            <!-- 1st Person Version (Default) -->
+            <div id="bio-first" class="bio-text">
+                <p>
+                I am a doctoral student and National Defense Science and Engineering Graduate Fellow at 
+                North Carolina State University, specializing in coastal engineering. My research investigates
+                the drivers and impacts of chronic, "sunny day" flooding in North Carolina's Down East region.
+                </p>
+                <p>
+                I combine hydrodynamics with advanced data science, utilizing semantic image segmentation 
+                and numerical modeling methods to validate flood predictions against real-world sensor data. 
+                As a KIETS Climate Leader and University of Delaware alumnus, I am dedicated to bridging the 
+                gap between engineering models and communities.
+                </p>
+            </div>
+
+            <!-- 3rd Person Version (Hidden by default) -->
+            <div id="bio-third" class="bio-text hidden-text">
+                <p>
+                Ryan McCune is a doctoral student and National Defense Science and Engineering Graduate Fellow at 
+                North Carolina State University, specializing in coastal engineering. His research investigates
+                the drivers and impacts of chronic, "sunny day" flooding in North Carolina's Down East region.
+                </p>
+                <p>
+                Ryan combines hydrodynamics with advanced data science, utilizing semantic image segmentation 
+                and numerical modeling methods to validate flood predictions against real-world sensor data. 
+                As a KIETS Climate Leader and University of Delaware alumnus, he is dedicated to bridging the 
+                gap between engineering models and communities.
+                </p>
+            </div>
+        </section>
+
+        <div class="parallax-window"></div>
+
+        <section id="news">
+            <h2>In The News</h2>
+            <p>Recent media coverage, interviews, and articles featuring work I have been involved with. Check out other news relating to the Sunny Day Flooding Project <a href="https://sunnydayflooding.com/news/" target="_blank">here</a>!</p>
+            
+            <div class="news-wrapper">
+                <button class="scroll-btn left-btn" id="scrollLeft" aria-label="Scroll Left">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div class="news-reel" id="newsReel">
+                    
+                    <!-- Card 1 -->
+                    <div class="news-card">
+                        <img src="assets/coastal-review-hino-paper.jpg" alt="Coastal Areas Flood More Frequently" onerror="this.src='https://via.placeholder.com/400x250'">
+                        <div class="news-content">
+                            <h3>Coastal Review</h3>
+                            <p>Discussing our recent paper on frequency of flooding in coastal North Carolina.</p>
+                            <p><a href="https://coastalreview.org/2025/06/coastal-areas-flood-more-frequently-than-thought-study/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="news-card">
+                         <!-- Placeholder video source logic -->
+                        <video autoplay loop muted playsinline>
+                        <source src="assets/post-CB-flood.mp4" type="video/mp4">
+                        </video>
+                        <div class="news-content">
+                            <h3>The Washington Post</h3>
+                            <p>Coverage of flooding in one of our partner communities, Carolina Beach.</p>
+                            <p><a href="https://www.washingtonpost.com/climate-environment/interactive/2024/coastal-flooding-carolina-beach-videos/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="news-card">
+                        <img src="assets/mccune-grad-school.jpg" alt="Grad School Profile" onerror="this.src='https://via.placeholder.com/400x250'">
+                        <div class="news-content">
+                            <h3>NC State Grad Student Profile</h3>
+                            <p>NC State University graduate student profile.</p>
+                            <p><a href="https://grad.ncsu.edu/news/2024/04/grad-student-profile-ryan-mccune/">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="scroll-btn right-btn" id="scrollRight" aria-label="Scroll Right">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         </section>
 
         <div class="parallax-window"></div>
@@ -56,38 +657,61 @@
                 <div class="project-card">
                     <img src="https://via.placeholder.com/400x250" alt="Project 1 Image">
                     <h3>Project Title One</h3>
-                    <p>A short description of your research project, what you did, and what the outcome was. Just like in the Collins example.</p>
+                    <p>A short description of your research project, what you did, and what the outcome was.</p>
                     <p><a href="#">Link to paper</a> &middot; <a href="#">Link to code</a></p>
                 </div>
 
                 <div class="project-card">
                     <img src="https://via.placeholder.com/400x250" alt="Project 2 Image">
                     <h3>Project Title Two</h3>
-                    <p>Another project. This one involves using deep learning to predict storm surge, similar to the Cuevas example.</p>
+                    <p>Another project. This one involves using deep learning to predict storm surge.</p>
                     <p><a href="#">Interactive Report</a></p>
-                </div>
-
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/400x250" alt="Project 3 Image">
-                    <h3>Project Title Three</h3>
-                    <p>A third project, perhaps on CFD modeling for wave-structure interaction or another topic you specialize in.</p>
-                    <p><a href="#">GitHub Repo</a></p>
                 </div>
             </div>
         </section>
 
-
         <section id="contact">
-            <p>I am always happy to connect and collaborate on ideas, advice, or any other inquiries.
-                <br> The best way to get in touch is via email.</p>
-
-            <div class="copyright">
-                <p><small>All text and media &copy; Ryan McCune, unless otherwise noted. All rights reserved.</small></p>
-                <p><small>Profile photo by Taylor Wanbaugh.</small></p>
+            <div class="contact-card">
+                <p>I am always happy to connect and collaborate on ideas, advice, or any other inquiries.
+                    The best way to get in touch is via email.</p>
+                <div class="copyright">All text and media © Ryan McCune, unless otherwise noted. All rights reserved.
+                    Profile photo by Taylor Wanbaugh.</div>
             </div>
         </section>
 
     </main>
     
+<script>
+    // --- Scroll Logic ---
+    const scrollContainer = document.getElementById("newsReel");
+    const leftBtn = document.getElementById("scrollLeft");
+    const rightBtn = document.getElementById("scrollRight");
+
+    rightBtn.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: 320, behavior: "smooth" });
+    });
+
+    leftBtn.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -320, behavior: "smooth" });
+    });
+
+    // --- Bio Toggle Logic ---
+    const bioToggle = document.getElementById('bioToggle');
+    const bioFirst = document.getElementById('bio-first');
+    const bioThird = document.getElementById('bio-third');
+
+    bioToggle.addEventListener('change', function() {
+        if(this.checked) {
+            // Switch is ON -> Show 3rd Person
+            bioFirst.classList.add('hidden-text');
+            bioThird.classList.remove('hidden-text');
+        } else {
+            // Switch is OFF -> Show 1st Person
+            bioThird.classList.add('hidden-text');
+            bioFirst.classList.remove('hidden-text');
+        }
+    });
+</script>
+
 </body>
 </html>
