@@ -172,9 +172,13 @@
             gap: 2rem; 
         }
 
+        /* UPDATED: Added flex column and gap to match side-panel spacing */
         .main-chart-block {
             flex: 2; 
             min-width: 0; 
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
         
         .chart-container-wrapper {
@@ -197,6 +201,7 @@
             background-color: #ffffff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             padding: 1.5rem;
+            margin-top: 0; /* Cleaned up inline styles */
         }
 
         .gauge-card h3, .weather-card h3 {
@@ -222,7 +227,6 @@
             background-color: #f0f0f0; 
             padding: 10px;
             border-radius: 5px;
-            /* Added Shadow Here */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: 1px solid #e5e5e5;
         }
@@ -333,15 +337,35 @@
             font-size: 0.8em;
         }
 
+        /* UPDATED: Improved Compass Letter Anchoring */
         .compass-rose span {
             position: absolute;
-            transform: translate(-50%, -50%);
+            /* Removed generic translate(-50%, -50%) to allow specific positioning */
         }
 
-        .compass-n { top: 5%; left: 50%; }
-        .compass-s { bottom: 5%; left: 50%; }
-        .compass-w { left: 5%; top: 50%; }
-        .compass-e { right: 5%; top: 50%; }
+        .compass-n { 
+            top: 5px; 
+            left: 50%; 
+            transform: translateX(-50%); /* Center horizontally */
+        }
+        
+        .compass-s { 
+            bottom: 5px; 
+            left: 50%; 
+            transform: translateX(-50%); /* Center horizontally */
+        }
+        
+        .compass-w { 
+            left: 5px; 
+            top: 50%; 
+            transform: translateY(-50%); /* Center vertically */
+        }
+        
+        .compass-e { 
+            right: 5px; 
+            top: 50%; 
+            transform: translateY(-50%); /* Center vertically */
+        }
 
         .wind-arrow-icon {
             position: absolute;
@@ -432,7 +456,7 @@
             <div class="dashboard-grid">
                 
                 <div class="main-chart-block">
-                    <div class="gauge-card" style="margin-top: 0;">
+                    <div class="gauge-card">
                         <h3>Beaufort Water Level Time Series (NAVD88)</h3>
                         
                         <div class="chart-container-wrapper">
@@ -487,7 +511,7 @@
                 </div>
 
                 <div class="side-panel">
-                    <div class="gauge-card" style="margin-top: 0;">
+                    <div class="gauge-card">
                         <div class="card-header">
                             <h3><i class="fas fa-water"></i> Beaufort Tide Gauge</h3>
                         </div>
@@ -504,7 +528,7 @@
                         </div>
                     </div>
 
-                    <div class="gauge-card" style="margin-top: 0;">
+                    <div class="gauge-card">
                         <div class="card-header">
                             <h3><i class="fas fa-water"></i> Wilmington Tide Gauge</h3>
                         </div>
@@ -597,9 +621,11 @@
                 if(otEl) otEl.textContent = new Date().toLocaleTimeString();
                 if(wrtEl) wrtEl.textContent = `Last Updated: ${new Date().toLocaleTimeString()}`;
                 
-                // Rotate Arrow (Wind Vane Style: Pointing into the wind)
-                // 0 deg = North Wind (Points Up)
-                if(waEl) waEl.style.transform = `rotate(${metar.winddirection}deg)`;
+                // Rotate Arrow
+                // UPDATED: Added +180 to the rotation. 
+                // Wind Direction is "from". North wind (0 deg) blows South. 
+                // Adding 180 makes the arrow point in the direction of flow.
+                if(waEl) waEl.style.transform = `rotate(${metar.winddirection + 180}deg)`;
 
                 if(wsEl) wsEl.style.display = 'none';
                 if(wdgEl) wdgEl.style.display = 'grid';
