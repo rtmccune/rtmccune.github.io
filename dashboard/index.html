@@ -38,6 +38,35 @@
             color: var(--text-color);
         }
 
+        /* --- Chart Tab Styling --- */
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            margin-bottom: -2px; 
+        }
+
+        .tab-btn:hover {
+            color: var(--link-color);
+        }
+
+        .tab-btn.active {
+            color: var(--sidebar-bg);
+            border-bottom: 3px solid var(--link-color);
+        }
+
         /* --- Sidebar Styling --- */
         #sidebar {
             position: fixed;
@@ -459,20 +488,32 @@
                 
                 <div class="main-chart-block">
                     <div class="gauge-card">
-                        <h3>Beaufort Water Level Time Series (NAVD88)</h3>
+                        <!-- Chart Tabs -->
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" onclick="switchChartTab('beaufort')">Beaufort</button>
+                            <button class="tab-btn" onclick="switchChartTab('wilmington')">Wilmington</button>
+                        </div>
+
+                        <h3 id="main-chart-title">Beaufort Water Level Time Series (NAVD88)</h3>
                         
                         <div class="chart-container-wrapper">
                             <canvas id="water-level-chart"></canvas>
                         </div>
                         
                         <div class="chart-footer">
-                            <p><small>Data source: NOAA Tides & Currents (Station 8656483). Water level datum: NAVD88. Time zone: LST/LDT.</small></p>
+                            <p><small id="main-chart-footer">Data source: NOAA Tides & Currents (Station 8656483). Water level datum: NAVD88. Time zone: LST/LDT.</small></p>
                         </div>
                     </div>
                     
                     <div class="weather-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-cloud-sun"></i> Beaufort Weather</h3>
+                        <!-- Weather Tabs -->
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" onclick="switchWeatherTab('beaufort')">Beaufort</button>
+                            <button class="tab-btn" onclick="switchWeatherTab('carolina_beach')">Carolina Beach</button>
+                        </div>
+
+                        <div class="card-header" style="border-bottom: none; margin-bottom: 0;">
+                            <h3 id="weather-card-title"><i class="fas fa-cloud-sun"></i> Beaufort Weather</h3>
                         </div>
                         <div class="refresh-time-block" id="weather-refresh-time">Last Updated: --</div>
                         
@@ -506,11 +547,11 @@
 
                             <div class="weather-footer" style="display: none;">
                                 <p><small>Last Observation Time: <span id="observation-time">--</span></small></p>
-                                <p><small>Data source: Open-Meteo. Michael J. Smith Field, Beaufort, NC (Approx).</small></p>
+                                <p><small id="weather-footer-text">Data source: Open-Meteo. Michael J. Smith Field, Beaufort, NC (Approx).</small></p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> <!-- Closes main-chart-block properly -->
 
                 <div class="side-panel">
                     <div class="gauge-card">
@@ -547,7 +588,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- Closes dashboard-grid -->
             
             <div class="copyright">
                 <p><small>All text and media &copy; Ryan McCune, unless otherwise noted. All rights reserved.</small></p>
@@ -557,13 +598,71 @@
     
     <script>
         // --- Configuration Constants ---
-        const WEATHER_API_URL = `https://api.open-meteo.com/v1/forecast?latitude=34.733&longitude=-76.660&current_weather=true&temperature_unit=celsius&wind_speed_unit=mph&timezone=auto`;
-        
+        const WEATHER_STATIONS = {
+            beaufort: { 
+                name: 'Beaufort', 
+                lat: 34.733, 
+                lon: -76.660,
+                footer: 'Michael J. Smith Field, Beaufort, NC (Approx)'
+            },
+            carolina_beach: { 
+                name: 'Carolina Beach', 
+                lat: 34.039, 
+                lon: -77.905,
+                footer: 'Carolina Beach, NC (Approx)'
+            }
+        };
+
+        let activeWeatherStation = 'beaufort';
+
         // NOAA CO-OPS Configuration
         const STATIONS = {
             beaufort: { id: '8656483', name: 'Beaufort, Duke Marine Lab' },
             wilmington: { id: '8658120', name: 'Wilmington' }
         };
+
+        // --- State ---
+        let activeChartStation = 'beaufort';
+
+        // --- UI Functions ---
+        function switchChartTab(stationKey) {
+            if (activeChartStation === stationKey) return; // Do nothing if already active
+            
+            // Update button styling
+            document.querySelectorAll('.main-chart-block .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.main-chart-block button[onclick="switchChartTab('${stationKey}')"]`).classList.add('active');
+            
+            // Update state and fetch new data
+            activeChartStation = stationKey;
+            updateMainChart(); 
+        }
+        
+        // --- Weather Tab Function ---
+        function switchWeatherTab(stationKey) {
+            if (activeWeatherStation === stationKey) return; 
+            
+            // Update button styling
+            document.querySelectorAll('.weather-card .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.weather-card button[onclick="switchWeatherTab('${stationKey}')"]`).classList.add('active');
+            
+            // Update state
+            activeWeatherStation = stationKey;
+            
+            // Temporarily trigger loading text to show work is happening
+            const wsEl = document.getElementById('weather-status');
+            const wdgEl = document.getElementById('weather-data-grid');
+            const wvbEl = document.getElementById('wind-visualization-block');
+            
+            if(wsEl) {
+                wsEl.style.display = 'block';
+                wsEl.textContent = '... Loading Weather Data ...';
+            }
+            if(wdgEl) wdgEl.style.display = 'none';
+            if(wvbEl) wvbEl.style.display = 'none';
+            
+            // Fetch new station data
+            loadWeatherData();
+        }
 
         // --- Helper Functions ---
         function cToF(c) { return (c * 9/5) + 32; }
@@ -593,8 +692,17 @@
 
         // Fetch Weather (Open-Meteo)
         async function loadWeatherData() {
+            const station = WEATHER_STATIONS[activeWeatherStation];
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${station.lat}&longitude=${station.lon}&current_weather=true&temperature_unit=celsius&wind_speed_unit=mph&timezone=auto`;
+
+            // Update card titles dynamically
+            const titleEl = document.getElementById('weather-card-title');
+            const footerTextEl = document.getElementById('weather-footer-text');
+            if (titleEl) titleEl.innerHTML = ` ${station.name} Weather`;
+            if (footerTextEl) footerTextEl.textContent = `Data source: Open-Meteo. ${station.footer}.`;
+
             try {
-                const response = await fetch(WEATHER_API_URL);
+                const response = await fetch(apiUrl);
                 if(!response.ok) throw new Error("Network error");
                 const data = await response.json();
                 const metar = data.current_weather;
@@ -725,11 +833,19 @@
             }
         }
 
-        // Fetch Main Chart Data (Beaufort Station, NAVD88)
+        // Fetch Main Chart Data
         async function updateMainChart() {
-            const stationId = STATIONS.beaufort.id; 
+            const stationKey = activeChartStation;
+            const stationId = STATIONS[stationKey].id; 
+            const stationName = STATIONS[stationKey].name;
             const baseUrl = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
             
+            // Dynamically update the title and footer text
+            const titleEl = document.getElementById('main-chart-title');
+            const footerEl = document.getElementById('main-chart-footer');
+            if (titleEl) titleEl.textContent = `${stationName} Water Level Time Series (NAVD88)`;
+            if (footerEl) footerEl.textContent = `Data source: NOAA Tides & Currents (Station ${stationId}). Water level datum: NAVD88. Time zone: LST/LDT.`;
+
             // Dates: Past 24 hours, Future 24 hours
             const now = new Date();
             const yesterday = new Date(now); yesterday.setHours(now.getHours() - 24);
