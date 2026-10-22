@@ -3,546 +3,435 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coastal Data Dashboard</title>
-    
+    <meta name="description" content="Live water levels, tide predictions, and weather for Beaufort, Wilmington, and Carolina Beach, North Carolina.">
+    <meta name="theme-color" content="#13253A">
+    <title>Coastal Data Dashboard | Ryan McCune</title>
+
     <link rel="icon" type="image/x-icon" href="../assets/data.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+
     <!-- Chart.js and Date Adapter -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    
+
     <style>
-        /* --- Basic Setup & Variables --- */
+        /* ---------- Design tokens (shared with the homepage) ---------- */
         :root {
-            --sidebar-width: 300px;
-            --main-bg: #fdfdfd;
-            --sidebar-bg: #7f93a9;
-            --text-color: #000000;
-            --link-color: #8C7D61;
-            --border-color: #9CA3AA;
+            --ink: #13253A;
+            --ink-2: #3E5165;
+            --ink-3: #66788A;
+            --paper: #F5F7F8;
+            --surface: #FFFFFF;
+            --line: #D8E0E5;
+            --shoal: #DCEBF1;
+            --sound: #2B6A88;
+            --sound-dark: #1F5470;
+            --deep: #163E56;
+            --flood: #D9A43A;
+            --high: #B5483A;
+            --low: #2B6A88;
+
+            --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+            --sans: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+            --max: 1240px;
+            --gutter: clamp(1rem, 4vw, 2.5rem);
+            --header-h: 64px;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            background-color: var(--main-bg);
-            color: var(--text-color);
-        }
-
-        /* --- Chart Tab Styling --- */
-        .tab-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 0.5rem 1rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #999;
-            cursor: pointer;
-            transition: color 0.2s ease;
-            margin-bottom: -2px; 
-        }
-
-        .tab-btn:hover {
-            color: var(--link-color);
-        }
-
-        .tab-btn.active {
-            color: var(--sidebar-bg);
-            border-bottom: 3px solid var(--link-color);
-        }
-
-        /* --- Sidebar Styling --- */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--sidebar-width);
-            height: 100vh; 
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            z-index: 100;
-            overflow-y: auto; 
-        }
-
-        #sidebar header {
-            margin-bottom: 2rem;
-        }
-
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%; /* Makes it round */
-            border: 5px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-        }
-
-        #sidebar h1 {
-            margin: 0.5rem 0 0.25rem;
-            font-size: 1.75rem;
-            color: #ffffff;
-            white-space: nowrap; 
-        }
-
-        #sidebar p {
+            font-family: var(--sans);
             font-size: 1rem;
-            color: #e0e0e0; 
+            line-height: 1.6;
+            color: var(--ink);
+            background: var(--paper);
+            -webkit-font-smoothing: antialiased;
         }
 
-        .pronouns {
-            font-size: 0.9rem;
-            font-weight: 400;
-            font-style: italic;
-            color: #d0d0d0;
-            margin-left: 0rem;
-        }
+        a { color: var(--sound); text-underline-offset: 0.18em; }
+        a:hover { color: var(--deep); }
 
-        /* Nav Links */
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex-grow: 1; 
-            width: 100%;
-        }
+        :focus-visible { outline: 2px solid var(--flood); outline-offset: 3px; border-radius: 4px; }
 
-        .nav-links li {
-            margin: 1.25rem 0;
-        }
+        .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
 
+        h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.15; margin: 0; }
+
+        /* ---------- Header (matches homepage) ---------- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: var(--header-h);
+            background: rgba(245, 247, 248, 0.9);
+            backdrop-filter: saturate(150%) blur(10px);
+            -webkit-backdrop-filter: saturate(150%) blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+        .site-header .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+        .brand { font-family: var(--serif); font-weight: 600; font-size: 1.2rem; color: var(--ink); text-decoration: none; white-space: nowrap; }
+        .brand:hover { color: var(--ink); }
+        /* min-width: 0 lets the nav shrink and scroll on phones instead of widening the page */
+        .site-header nav { min-width: 0; }
+        .nav-links { list-style: none; display: flex; gap: 0.25rem; margin: 0; padding: 0; }
         .nav-links a {
-            text-decoration: none;
-            color: #ffffff; 
-            font-size: 1.1rem;
-            font-weight: 500;
             display: block;
-        }
-
-        .nav-links a:hover {
-            color: var(--link-color);
-        }
-
-        .sidebar-logo {
-            margin-bottom: 1.5rem; 
-        }
-
-        .sidebar-logo img {
-            width: 150px; 
-            height: auto; 
-            opacity: 0.9; 
-        }
-
-        .social-links {
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            font-size: 1.5rem;
-            margin: 0 0.75rem;
-            color: #ffffff; 
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            color: var(--ink-2);
             text-decoration: none;
-        }
-
-        .social-links a:hover {
-            color: var(--link-color);
-        }
-
-        /* --- Main Content Styling --- */
-        #content {
-            margin-left: var(--sidebar-width); 
-            padding: 0 0 3rem 0; 
-        }
-
-        #content section {
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 4rem;
-            padding: 1rem 3rem 2rem 3rem; 
-            box-sizing: border-box; 
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
-
-        /* --- Dashboard Specific Layout --- */
-        .dashboard-container {
-            max-width: 1200px !important; 
-        }
-
-        .dashboard-grid {
-            display: flex;
-            gap: 2rem; 
-        }
-
-        /* UPDATED: Added flex column and gap to match side-panel spacing */
-        .main-chart-block {
-            flex: 2; 
-            min-width: 0; 
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-        
-        .chart-container-wrapper {
-            position: relative;
-            height: 400px; 
-            width: 100%;
-        }
-
-        .side-panel {
-            flex: 1; 
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* Card Styling */
-        .gauge-card, .weather-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            padding: 1.5rem;
-            margin-top: 0; /* Cleaned up inline styles */
-        }
-
-        .gauge-card h3, .weather-card h3 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            color: var(--sidebar-bg);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap; 
-        }
-
-        /* Current Level Gauge Block */
-        .current-level-block {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            background-color: #f0f0f0; 
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 1px solid #e5e5e5;
-        }
-
-        .current-level {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--link-color); 
-            line-height: 1.2;
-        }
-
-        .unit-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Tide Predictions List */
-        .predictions-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
             font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
         }
+        .nav-links a:hover { color: var(--ink); background: rgba(19, 37, 58, 0.06); }
+        .nav-links a[aria-current="page"] { color: var(--ink); background: rgba(19, 37, 58, 0.08); }
+        .nav-links .nav-cv { color: var(--sound); border: 1px solid rgba(43, 106, 136, 0.35); margin-left: 0.35rem; }
+        .nav-links .nav-cv:hover { background: var(--sound); color: #fff; }
 
-        .predictions-list li {
-            padding: 5px 0;
-            border-bottom: 1px dashed #e0e0e0;
+        /* ---------- Page head ---------- */
+        .page-head {
+            padding: 2.75rem 0 2rem;
             display: flex;
             justify-content: space-between;
+            align-items: flex-end;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .page-head h1 { font-size: clamp(2.1rem, 4vw, 2.9rem); letter-spacing: -0.01em; }
+        .page-head p { margin: 0.6rem 0 0; color: var(--ink-2); max-width: 62ch; }
+        .refresh-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+            color: var(--ink-3);
+            white-space: nowrap;
+        }
+        .pulse {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #3E9B6B;
+            box-shadow: 0 0 0 0 rgba(62, 155, 107, 0.5);
+            animation: pulse 2.4s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(62, 155, 107, 0.45); }
+            70% { box-shadow: 0 0 0 8px rgba(62, 155, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(62, 155, 107, 0); }
         }
 
-        .predictions-list li:last-child {
-            border-bottom: none;
+        /* ---------- Layout ---------- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+            gap: 1.5rem;
+            padding-bottom: 3rem;
         }
+        .main-chart-block, .side-panel { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
 
-        .high-tide { color: #C0392B; font-weight: 600; }
-        .low-tide { color: #2980B9; font-weight: 600; }
-        .time { color: #777; font-size: 0.9em; }
-        
-        .refresh-time-block {
-            font-size: 0.8em;
-            color: #999;
-            text-align: right;
-            margin-top: -0.5rem;
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 1.5rem;
+        }
+        .card h3 { font-size: 1.35rem; }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
             margin-bottom: 1rem;
-            display: block;
+        }
+        .card-sub { font-size: 0.85rem; color: var(--ink-3); margin: 0.2rem 0 0; }
+
+        /* ---------- Tabs (segmented control) ---------- */
+        .tab-buttons {
+            display: inline-flex;
+            background: #E8EDF0;
+            border-radius: 8px;
+            padding: 3px;
+        }
+        .tab-btn {
+            font-family: var(--sans);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--ink-3);
+            background: transparent;
+            border: 0;
+            padding: 0.42rem 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .tab-btn:hover { color: var(--ink); }
+        .tab-btn.active {
+            background: #fff;
+            color: var(--ink);
+            box-shadow: 0 1px 2px rgba(19, 37, 58, 0.12);
         }
 
-        /* --- Weather Card Styling --- */
+        /* ---------- Chart ---------- */
+        .chart-container-wrapper { position: relative; height: 400px; width: 100%; }
+        .chart-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: 0.85rem; color: var(--ink-2); margin: 0 0 0.75rem; }
+        .chart-legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+        .chart-legend .line { width: 22px; height: 0; border-top: 2.5px solid var(--sound); }
+        .chart-legend .line.dashed { border-top: 2px dashed var(--high); }
+        .chart-legend .line.now { border-top: 1.5px dotted var(--ink-2); width: 14px; transform: rotate(90deg); }
+
+        .chart-footer, .weather-footer {
+            border-top: 1px solid var(--line);
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            font-size: 0.82rem;
+            color: var(--ink-3);
+        }
+        .chart-footer p, .weather-footer p { margin: 0.15rem 0; }
+
+        .status-msg { font-size: 0.9rem; color: var(--ink-3); margin: 0.5rem 0 0; }
+        .status-msg.error { color: var(--high); }
+
+        /* ---------- Gauge cards ---------- */
+        .current-level-block {
+            background: var(--shoal);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .unit-label { font-size: 0.85rem; color: var(--sound-dark); font-weight: 600; }
+        .current-level-row { display: flex; align-items: baseline; gap: 0.4rem; }
+        .current-level {
+            font-family: var(--serif);
+            font-size: 2.75rem;
+            font-weight: 600;
+            line-height: 1.1;
+            color: var(--deep);
+            font-variant-numeric: tabular-nums;
+        }
+        .current-unit { font-size: 0.95rem; color: var(--ink-2); }
+        .obs-time { font-size: 0.82rem; color: var(--ink-3); margin-top: 0.15rem; }
+
+        .refresh-time-block { font-size: 0.8rem; color: var(--ink-3); }
+
+        .predictions-head { font-size: 0.85rem; font-weight: 600; color: var(--ink-2); margin: 0 0 0.25rem; }
+        .predictions-list { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
+        .predictions-list li {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #EDF1F3;
+            font-variant-numeric: tabular-nums;
+        }
+        .predictions-list li:last-child { border-bottom: none; }
+        .high-tide, .low-tide { font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem; }
+        .high-tide { color: var(--high); }
+        .low-tide { color: var(--low); }
+        .time { color: var(--ink-3); font-size: 0.9em; min-width: 4.8rem; text-align: right; }
+
+        /* ---------- Weather ---------- */
+        .weather-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 190px;
+            gap: 1.5rem;
+            align-items: center;
+        }
         #weather-data-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
         }
-
         .weather-item {
-            padding: 10px;
-            border-left: 3px solid var(--link-color);
-            background-color: #fafafa;
-            border-radius: 3px;
+            padding: 0.85rem 1rem;
+            background: #F7F9FA;
+            border: 1px solid #EDF1F3;
+            border-radius: 10px;
         }
-
         .weather-item strong {
             display: block;
-            font-size: 1.1em;
-            color: var(--sidebar-bg);
+            font-size: 1.2rem;
+            color: var(--ink);
+            font-variant-numeric: tabular-nums;
         }
+        .weather-item > span { font-size: 0.82rem; color: var(--ink-3); }
 
-        .weather-item span {
-            font-size: 0.9em;
-            color: #555;
-        }
-
-        /* Wind Visualization */
-        #wind-visualization-block {
-            text-align: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-            margin-bottom: 1rem;
-        }
-
-        #wind-visualization-block h4 {
-            font-size: 1.25rem;
-            color: var(--sidebar-bg);
-            margin-bottom: 1rem;
-        }
-
-        .wind-compass-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .compass-rose {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 2px solid var(--border-color);
-            border-radius: 50%;
-            color: #999;
-            font-weight: 700;
-            font-size: 0.8em;
-        }
-
-        /* UPDATED: Improved Compass Letter Anchoring */
-        .compass-rose span {
-            position: absolute;
-            /* Removed generic translate(-50%, -50%) to allow specific positioning */
-        }
-
-        .compass-n { 
-            top: 5px; 
-            left: 50%; 
-            transform: translateX(-50%); /* Center horizontally */
-        }
-        
-        .compass-s { 
-            bottom: 5px; 
-            left: 50%; 
-            transform: translateX(-50%); /* Center horizontally */
-        }
-        
-        .compass-w { 
-            left: 5px; 
-            top: 50%; 
-            transform: translateY(-50%); /* Center vertically */
-        }
-        
-        .compass-e { 
-            right: 5px; 
-            top: 50%; 
-            transform: translateY(-50%); /* Center vertically */
-        }
-
+        #wind-visualization-block { text-align: center; }
+        #wind-visualization-block h4 { font-family: var(--sans); font-size: 0.85rem; font-weight: 600; color: var(--ink-2); margin: 0 0 0.5rem; }
+        .wind-compass-container { position: relative; width: 132px; height: 132px; margin: 0 auto 0.4rem; }
+        .wind-compass-container svg.rose { position: absolute; inset: 0; width: 100%; height: 100%; }
         .wind-arrow-icon {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            color: #2980B9; 
-            transition: transform 0.8s ease-out; 
-            transform: rotate(0deg); 
+            left: 50%; top: 50%;
+            width: 64px; height: 64px;
+            margin: -32px 0 0 -32px;
+            color: var(--sound);
+            transition: transform 0.8s ease-out;
+            transform: rotate(0deg);
         }
+        .wind-direction-label { font-size: 1.15rem; font-weight: 700; color: var(--ink); margin: 0; font-variant-numeric: tabular-nums; }
+        .wind-note { color: var(--ink-3); font-size: 0.78rem; margin: 0.15rem 0 0; }
 
-        .wind-direction-label {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--link-color);
-        }
-
-        .weather-footer, .chart-footer, .copyright {
-            padding-top: 1rem;
-            text-align: center;
-            color: #777;
-        }
-        .weather-footer small, .chart-footer small, .copyright small {
-            display: block;
-        }
-        .weather-footer {
-             border-top: 1px solid #eee;
-        }
+        /* ---------- Footer ---------- */
         .copyright {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #666;
+            border-top: 1px solid var(--line);
+            padding: 1.5rem 0 2.5rem;
+            font-size: 0.85rem;
+            color: var(--ink-3);
         }
 
-        /* --- Mobile Responsiveness --- */
-        @media (max-width: 900px) {
-            #sidebar {
-                position: static; 
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: 1rem;
+        /* ---------- Responsive ---------- */
+        @media (max-width: 960px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .side-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+        }
+        @media (max-width: 820px) {
+            .nav-links {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+                mask-image: linear-gradient(90deg, #000 85%, transparent);
+                padding-right: 1.5rem;
             }
-
-            #content {
-                margin-left: 0;
-                padding: 2rem 0; 
-            }
-
-            #content section {
-                padding-left: 1rem; 
-                padding-right: 1rem; 
-            }
-            
-            .dashboard-grid {
-                flex-direction: column; 
-            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links a { padding: 0.4rem 0.55rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 640px) {
+            .side-panel { grid-template-columns: 1fr; }
+            .weather-layout { grid-template-columns: 1fr; }
+            .chart-container-wrapper { height: 300px; }
+            .card { padding: 1.15rem; }
+            .brand { font-size: 1.05rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .pulse { animation: none; }
+            .wind-arrow-icon { transition: none; }
         }
     </style>
 </head>
 <body>
 
-    <nav id="sidebar">
-        <header>
-            <img src="../assets/headshot.png" alt="Ryan McCune Headshot" class="profile-pic">
-            <h1>Ryan McCune <small class="pronouns">he/him</small></h1>
-            <p>Coastal Engineer<br>PhD Student</p>
-        </header>
-
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/#news">In The News</a></li>
-            <li><a href="/#research">Research</a></li>
-            <li><a href="/dashboard/">Dashboard</a></li>
-            <li><a href="../assets/RyanMcCune.pdf">CV</a></li>
-        </ul>
-
-        <footer class="social-links">
-            <a href="mailto:rmccune@ncsu.edu" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            <a href="https://github.com/rtmccune" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-            <a href="https://www.linkedin.com/in/ryan-mccune" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-            <a href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-        </footer>
-    </nav>
+    <header class="site-header">
+        <div class="wrap">
+            <a class="brand" href="/">Ryan McCune</a>
+            <nav aria-label="Primary">
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#research">Research</a></li>
+                    <li><a href="/#news">In the News</a></li>
+                    <li><a href="/dashboard/" aria-current="page">Dashboard</a></li>
+                    <li><a class="nav-cv" href="../assets/RyanMcCune.pdf">CV</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <main id="content">
-        <section id="dashboard" class="dashboard-container">
-            <h2>Coastal Data Dashboard</h2>
-            
+        <section id="dashboard" class="wrap">
+            <div class="page-head">
+                <div>
+                    <h1>Coastal data dashboard</h1>
+                    <p>Live water levels from NOAA tide gauges at Beaufort and Wilmington, with current weather for two of the communities where I work.</p>
+                </div>
+                <span class="refresh-note"><span class="pulse" aria-hidden="true"></span> Updates automatically every few minutes</span>
+            </div>
+
             <div class="dashboard-grid">
-                
+
                 <div class="main-chart-block">
-                    <div class="gauge-card">
-                        <!-- Chart Tabs -->
-                        <div class="tab-buttons">
-                            <button class="tab-btn active" onclick="switchChartTab('beaufort')">Beaufort</button>
-                            <button class="tab-btn" onclick="switchChartTab('wilmington')">Wilmington</button>
+                    <!-- ===== Water level chart ===== -->
+                    <div class="card">
+                        <div class="card-top">
+                            <div>
+                                <h3 id="main-chart-title">Beaufort Water Level Time Series (NAVD88)</h3>
+                                <p class="card-sub">Past 24 hours observed and next 24 hours predicted</p>
+                            </div>
+                            <div class="tab-buttons" role="tablist" aria-label="Chart station">
+                                <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchChartTab('beaufort')">Beaufort</button>
+                                <button class="tab-btn" role="tab" aria-selected="false" onclick="switchChartTab('wilmington')">Wilmington</button>
+                            </div>
                         </div>
 
-                        <h3 id="main-chart-title">Beaufort Water Level Time Series (NAVD88)</h3>
-                        
-                        <div class="chart-container-wrapper">
-                            <canvas id="water-level-chart"></canvas>
+                        <div class="chart-legend" aria-hidden="true">
+                            <span><i class="line"></i>Measured</span>
+                            <span><i class="line dashed"></i>Predicted (astronomical tide)</span>
+                            <span><i class="line now"></i>Now</span>
                         </div>
-                        
+
+                        <div class="chart-container-wrapper">
+                            <canvas id="water-level-chart" aria-label="Water level time series chart" role="img"></canvas>
+                        </div>
+                        <p class="status-msg" id="chart-status" hidden></p>
+
                         <div class="chart-footer">
                             <p><small id="main-chart-footer">Data source: NOAA Tides & Currents (Station 8656483). Water level datum: NAVD88. Time zone: LST/LDT.</small></p>
                         </div>
                     </div>
-                    
-                    <div class="weather-card">
-                        <!-- Weather Tabs -->
-                        <div class="tab-buttons">
-                            <button class="tab-btn active" onclick="switchWeatherTab('beaufort')">Beaufort</button>
-                            <button class="tab-btn" onclick="switchWeatherTab('carolina_beach')">Carolina Beach</button>
-                        </div>
 
-                        <div class="card-header" style="border-bottom: none; margin-bottom: 0;">
-                            <h3 id="weather-card-title"><i class="fas fa-cloud-sun"></i> Beaufort Weather</h3>
-                        </div>
-                        <div class="refresh-time-block" id="weather-refresh-time">Last Updated: --</div>
-                        
-                        <div id="weather-data">
-                            <p id="weather-status" style="text-align: center; color: #666;">... Loading Weather Data ...</p>
-
-                            <div id="weather-data-grid" style="display: none;">
-                                <div class="weather-item"><strong><span id="temperature">--</span></strong><span>Temperature (°F/°C)</span></div>
-                                <div class="weather-item"><strong><span id="wind-speed">--</span></strong><span>Wind Speed (mph)</span></div>
-                                <div class="weather-item"><strong><span id="sky-condition">--</span></strong><span>Condition</span></div>
-                                <div class="weather-item"><strong><span id="precipitation">--</span></strong><span>Precipitation (mm)</span></div>
+                    <!-- ===== Weather ===== -->
+                    <div class="card weather-card">
+                        <div class="card-top">
+                            <div>
+                                <h3 id="weather-card-title"><i class="fas fa-cloud-sun" aria-hidden="true"></i> Beaufort Weather</h3>
+                                <p class="card-sub refresh-time-block" id="weather-refresh-time">Last Updated: --</p>
                             </div>
+                            <div class="tab-buttons" role="tablist" aria-label="Weather location">
+                                <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchWeatherTab('beaufort')">Beaufort</button>
+                                <button class="tab-btn" role="tab" aria-selected="false" onclick="switchWeatherTab('carolina_beach')">Carolina Beach</button>
+                            </div>
+                        </div>
 
-                            <div id="wind-visualization-block" style="display: none;">
-                                <h4>Wind Direction</h4>
-                                <div class="wind-compass-container">
-                                    <div class="compass-rose">
-                                        <span class="compass-n">N</span>
-                                        <span class="compass-s">S</span>
-                                        <span class="compass-w">W</span>
-                                        <span class="compass-e">E</span>
-                                    </div>
-                                    <!-- Arrow with thin stroke and no fill -->
-                                    <svg id="wind-arrow" class="wind-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 19V5M12 5l-7 7M12 5l7 7" /> 
-                                    </svg>
+                        <div id="weather-data">
+                            <p id="weather-status" class="status-msg">Loading weather data…</p>
+
+                            <div class="weather-layout">
+                                <div id="weather-data-grid" style="display: none;">
+                                    <div class="weather-item"><strong><span id="temperature">--</span></strong><span>Temperature (°F / °C)</span></div>
+                                    <div class="weather-item"><strong><span id="wind-speed">--</span></strong><span>Wind speed (mph)</span></div>
+                                    <div class="weather-item"><strong><span id="sky-condition">--</span></strong><span>Condition</span></div>
+                                    <div class="weather-item"><strong><span id="precipitation">--</span></strong><span>Precipitation (mm)</span></div>
                                 </div>
-                                <p id="wind-direction-text" class="wind-direction-label">--</p>
-                                <p style="color: #777; font-size: 0.85em;">Direction from which the wind is blowing.</p>
+
+                                <div id="wind-visualization-block" style="display: none;">
+                                    <h4>Wind direction</h4>
+                                    <div class="wind-compass-container">
+                                        <svg class="rose" viewBox="0 0 132 132" aria-hidden="true">
+                                            <circle cx="66" cy="66" r="60" fill="#F7F9FA" stroke="#D8E0E5" stroke-width="1.5"/>
+                                            <circle cx="66" cy="66" r="44" fill="none" stroke="#EDF1F3" stroke-width="1"/>
+                                            <g stroke="#B9C6CF" stroke-width="1">
+                                                <line x1="66" y1="6" x2="66" y2="14"/><line x1="66" y1="118" x2="66" y2="126"/>
+                                                <line x1="6" y1="66" x2="14" y2="66"/><line x1="118" y1="66" x2="126" y2="66"/>
+                                                <line x1="23.6" y1="23.6" x2="28.5" y2="28.5"/><line x1="108.4" y1="23.6" x2="103.5" y2="28.5"/>
+                                                <line x1="23.6" y1="108.4" x2="28.5" y2="103.5"/><line x1="108.4" y1="108.4" x2="103.5" y2="103.5"/>
+                                            </g>
+                                            <g font-family="Public Sans, sans-serif" font-size="11" font-weight="700" fill="#66788A" text-anchor="middle">
+                                                <text x="66" y="27">N</text>
+                                                <text x="66" y="114">S</text>
+                                                <text x="22" y="70">W</text>
+                                                <text x="110" y="70">E</text>
+                                            </g>
+                                        </svg>
+                                        <!-- Arrow points in the direction the wind is blowing toward -->
+                                        <svg id="wind-arrow" class="wind-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 19V5M12 5l-6 6M12 5l6 6" />
+                                        </svg>
+                                    </div>
+                                    <p id="wind-direction-text" class="wind-direction-label">--</p>
+                                    <p class="wind-note">Reported as the direction the wind blows from. The arrow shows where it is heading.</p>
+                                </div>
                             </div>
 
                             <div class="weather-footer" style="display: none;">
@@ -551,69 +440,78 @@
                             </div>
                         </div>
                     </div>
-                </div> <!-- Closes main-chart-block properly -->
+                </div>
 
+                <!-- ===== Tide gauges ===== -->
                 <div class="side-panel">
-                    <div class="gauge-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-water"></i> Beaufort Tide Gauge</h3>
-                        </div>
-                        <div class="refresh-time-block" id="beaufort-refresh-time">Last updated: --</div>
-                        
-                        <div class="gauge-details">
-                            <div class="current-level-block">
-                                <div class="unit-label">Current Water Level (ft MLLW)</div>
-                                <div class="current-level" id="beaufort-current-level">...</div>
+                    <div class="card gauge-card">
+                        <div class="card-top">
+                            <div>
+                                <h3><i class="fas fa-water" aria-hidden="true"></i> Beaufort tide gauge</h3>
+                                <p class="card-sub">Duke Marine Lab, NOAA 8656483</p>
                             </div>
-                            <ul class="predictions-list" id="beaufort-predictions-list">
-                                <li>Loading tide predictions...</li>
-                            </ul>
                         </div>
+                        <div class="current-level-block">
+                            <div class="unit-label">Current water level</div>
+                            <div class="current-level-row">
+                                <span class="current-level" id="beaufort-current-level">…</span>
+                                <span class="current-unit">ft MLLW</span>
+                            </div>
+                            <div class="obs-time" id="beaufort-obs-time"></div>
+                        </div>
+                        <p class="predictions-head">Next tides</p>
+                        <ul class="predictions-list" id="beaufort-predictions-list">
+                            <li>Loading tide predictions…</li>
+                        </ul>
+                        <p class="refresh-time-block" id="beaufort-refresh-time">Last updated: --</p>
                     </div>
 
-                    <div class="gauge-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-water"></i> Wilmington Tide Gauge</h3>
-                        </div>
-                        <div class="refresh-time-block" id="wilmington-refresh-time">Last updated: --</div>
-                        
-                        <div class="gauge-details">
-                            <div class="current-level-block">
-                                <div class="unit-label">Current Water Level (ft MLLW)</div>
-                                <div class="current-level" id="wilmington-current-level">...</div>
+                    <div class="card gauge-card">
+                        <div class="card-top">
+                            <div>
+                                <h3><i class="fas fa-water" aria-hidden="true"></i> Wilmington tide gauge</h3>
+                                <p class="card-sub">Cape Fear River, NOAA 8658120</p>
                             </div>
-                            <ul class="predictions-list" id="wilmington-predictions-list">
-                                <li>Loading tide predictions...</li>
-                            </ul>
                         </div>
+                        <div class="current-level-block">
+                            <div class="unit-label">Current water level</div>
+                            <div class="current-level-row">
+                                <span class="current-level" id="wilmington-current-level">…</span>
+                                <span class="current-unit">ft MLLW</span>
+                            </div>
+                            <div class="obs-time" id="wilmington-obs-time"></div>
+                        </div>
+                        <p class="predictions-head">Next tides</p>
+                        <ul class="predictions-list" id="wilmington-predictions-list">
+                            <li>Loading tide predictions…</li>
+                        </ul>
+                        <p class="refresh-time-block" id="wilmington-refresh-time">Last updated: --</p>
                     </div>
                 </div>
-            </div> <!-- Closes dashboard-grid -->
-            
+            </div>
+
             <div class="copyright">
                 <p><small>All text and media &copy; Ryan McCune, unless otherwise noted. All rights reserved.</small></p>
             </div>
         </section>
     </main>
-    
+
     <script>
         // --- Configuration Constants ---
         const WEATHER_STATIONS = {
-            beaufort: { 
-                name: 'Beaufort', 
-                lat: 34.733, 
+            beaufort: {
+                name: 'Beaufort',
+                lat: 34.733,
                 lon: -76.660,
                 footer: 'Michael J. Smith Field, Beaufort, NC (Approx)'
             },
-            carolina_beach: { 
-                name: 'Carolina Beach', 
-                lat: 34.039, 
+            carolina_beach: {
+                name: 'Carolina Beach',
+                lat: 34.039,
                 lon: -77.905,
                 footer: 'Carolina Beach, NC (Approx)'
             }
         };
-
-        let activeWeatherStation = 'beaufort';
 
         // NOAA CO-OPS Configuration
         const STATIONS = {
@@ -621,57 +519,71 @@
             wilmington: { id: '8658120', name: 'Wilmington' }
         };
 
+        const NOAA_BASE = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
+
         // --- State ---
+        let activeWeatherStation = 'beaufort';
         let activeChartStation = 'beaufort';
+        let chartRequestId = 0;    // guards against a slow response overwriting a newer tab
+        let weatherRequestId = 0;
 
         // --- UI Functions ---
-        function switchChartTab(stationKey) {
-            if (activeChartStation === stationKey) return; // Do nothing if already active
-            
-            // Update button styling
-            document.querySelectorAll('.main-chart-block .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.main-chart-block button[onclick="switchChartTab('${stationKey}')"]`).classList.add('active');
-            
-            // Update state and fetch new data
-            activeChartStation = stationKey;
-            updateMainChart(); 
+        function setActiveTab(container, stationKey, fnName) {
+            container.querySelectorAll('.tab-btn').forEach(btn => {
+                const on = btn.getAttribute('onclick') === `${fnName}('${stationKey}')`;
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-selected', String(on));
+            });
         }
-        
-        // --- Weather Tab Function ---
+
+        function switchChartTab(stationKey) {
+            if (activeChartStation === stationKey) return;
+            setActiveTab(document.querySelector('.main-chart-block .card'), stationKey, 'switchChartTab');
+            activeChartStation = stationKey;
+            updateMainChart();
+        }
+
         function switchWeatherTab(stationKey) {
-            if (activeWeatherStation === stationKey) return; 
-            
-            // Update button styling
-            document.querySelectorAll('.weather-card .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.weather-card button[onclick="switchWeatherTab('${stationKey}')"]`).classList.add('active');
-            
-            // Update state
+            if (activeWeatherStation === stationKey) return;
+            setActiveTab(document.querySelector('.weather-card'), stationKey, 'switchWeatherTab');
             activeWeatherStation = stationKey;
-            
-            // Temporarily trigger loading text to show work is happening
+
             const wsEl = document.getElementById('weather-status');
-            const wdgEl = document.getElementById('weather-data-grid');
-            const wvbEl = document.getElementById('wind-visualization-block');
-            
-            if(wsEl) {
-                wsEl.style.display = 'block';
-                wsEl.textContent = '... Loading Weather Data ...';
-            }
-            if(wdgEl) wdgEl.style.display = 'none';
-            if(wvbEl) wvbEl.style.display = 'none';
-            
-            // Fetch new station data
+            wsEl.hidden = false;
+            wsEl.classList.remove('error');
+            wsEl.textContent = 'Loading weather data…';
+            document.getElementById('weather-data-grid').style.display = 'none';
+            document.getElementById('wind-visualization-block').style.display = 'none';
+
             loadWeatherData();
         }
 
         // --- Helper Functions ---
-        function cToF(c) { return (c * 9/5) + 32; }
-        
-        function getWeatherDescription(code) {
-            if (code === 0) return "Clear Sky";
-            if (code >= 1 && code <= 3) return "Partly Cloudy";
-            if (code >= 45) return "Fog/Rain";
-            return "Variable";
+        function cToF(c) { return (c * 9 / 5) + 32; }
+
+        // WMO weather interpretation codes used by Open-Meteo
+        function getWeather(code) {
+            const map = [
+                [[0], 'Clear sky', 'fa-sun'],
+                [[1], 'Mainly clear', 'fa-sun'],
+                [[2], 'Partly cloudy', 'fa-cloud-sun'],
+                [[3], 'Overcast', 'fa-cloud'],
+                [[45, 48], 'Fog', 'fa-smog'],
+                [[51, 53, 55], 'Drizzle', 'fa-cloud-rain'],
+                [[56, 57], 'Freezing drizzle', 'fa-cloud-rain'],
+                [[61], 'Light rain', 'fa-cloud-rain'],
+                [[63], 'Rain', 'fa-cloud-rain'],
+                [[65], 'Heavy rain', 'fa-cloud-showers-heavy'],
+                [[66, 67], 'Freezing rain', 'fa-cloud-rain'],
+                [[71, 73, 75, 77], 'Snow', 'fa-snowflake'],
+                [[80, 81], 'Rain showers', 'fa-cloud-sun-rain'],
+                [[82], 'Heavy showers', 'fa-cloud-showers-heavy'],
+                [[85, 86], 'Snow showers', 'fa-snowflake'],
+                [[95], 'Thunderstorm', 'fa-cloud-bolt'],
+                [[96, 99], 'Thunderstorm with hail', 'fa-cloud-bolt']
+            ];
+            const hit = map.find(([codes]) => codes.includes(code));
+            return hit ? { text: hit[1], icon: hit[2] } : { text: 'Variable', icon: 'fa-cloud-sun' };
         }
 
         function formatNoaaDate(date) {
@@ -680,194 +592,197 @@
             const dd = String(date.getDate()).padStart(2, '0');
             return `${yyyy}${mm}${dd}`;
         }
-        
+
+        // NOAA returns "YYYY-MM-DD HH:MM"; the "T" makes it parse in every browser (incl. Safari)
+        function parseNoaaTime(s) { return new Date(s.replace(' ', 'T')); }
+
+        function shortTime(d) { return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+
         function getCardinalDirection(angle) {
-            // Meteorological convention: 0=North (From North), 90=East (From East)
+            // Meteorological convention: 0 = from North, 90 = from East
             const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
             const index = Math.round(angle / 22.5) % 16;
             return directions[index];
         }
 
-        // --- Real Data Fetching Functions ---
-
-        // Fetch Weather (Open-Meteo)
+        // --- Weather (Open-Meteo) ---
         async function loadWeatherData() {
+            const reqId = ++weatherRequestId;
             const station = WEATHER_STATIONS[activeWeatherStation];
-            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${station.lat}&longitude=${station.lon}&current_weather=true&temperature_unit=celsius&wind_speed_unit=mph&timezone=auto`;
+            const params = new URLSearchParams({
+                latitude: station.lat,
+                longitude: station.lon,
+                current: 'temperature_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
+                temperature_unit: 'celsius',
+                wind_speed_unit: 'mph',
+                precipitation_unit: 'mm',
+                timezone: 'auto'
+            });
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?${params}`;
 
-            // Update card titles dynamically
             const titleEl = document.getElementById('weather-card-title');
             const footerTextEl = document.getElementById('weather-footer-text');
-            if (titleEl) titleEl.innerHTML = ` ${station.name} Weather`;
-            if (footerTextEl) footerTextEl.textContent = `Data source: Open-Meteo. ${station.footer}.`;
+            footerTextEl.textContent = `Data source: Open-Meteo. ${station.footer}.`;
 
             try {
                 const response = await fetch(apiUrl);
-                if(!response.ok) throw new Error("Network error");
+                if (!response.ok) throw new Error(`Open-Meteo responded ${response.status}`);
                 const data = await response.json();
-                const metar = data.current_weather;
+                if (reqId !== weatherRequestId) return; // a newer tab was selected
+                const cur = data.current;
 
-                // Elements
-                const tEl = document.getElementById('temperature');
-                const wsElValue = document.getElementById('wind-speed');
-                const wdtEl = document.getElementById('wind-direction-text');
-                const scEl = document.getElementById('sky-condition');
-                const otEl = document.getElementById('observation-time');
-                const wrtEl = document.getElementById('weather-refresh-time');
-                const waEl = document.getElementById('wind-arrow');
-                const wsEl = document.getElementById('weather-status');
-                const wdgEl = document.getElementById('weather-data-grid');
-                const wvbEl = document.getElementById('wind-visualization-block');
-                const wfEl = document.querySelector('.weather-footer');
+                const wx = getWeather(cur.weather_code);
+                titleEl.innerHTML = `<i class="fas ${wx.icon}" aria-hidden="true"></i> ${station.name} Weather`;
 
-                if(tEl) tEl.textContent = `${cToF(metar.temperature).toFixed(0)}°F / ${metar.temperature}°C`;
-                if(wsElValue) wsElValue.textContent = `${metar.windspeed} mph`;
-                
-                // Display cardinal direction alongside degrees
-                const cardinal = getCardinalDirection(metar.winddirection);
-                if(wdtEl) wdtEl.textContent = `${metar.winddirection}° ${cardinal}`;
-                
-                if(scEl) scEl.textContent = getWeatherDescription(metar.weathercode);
-                if(otEl) otEl.textContent = new Date().toLocaleTimeString();
-                if(wrtEl) wrtEl.textContent = `Last Updated: ${new Date().toLocaleTimeString()}`;
-                
-                // Rotate Arrow
-                // UPDATED: Added +180 to the rotation. 
-                // Wind Direction is "from". North wind (0 deg) blows South. 
-                // Adding 180 makes the arrow point in the direction of flow.
-                if(waEl) waEl.style.transform = `rotate(${metar.winddirection + 180}deg)`;
+                document.getElementById('temperature').textContent =
+                    `${cToF(cur.temperature_2m).toFixed(0)}°F / ${cur.temperature_2m.toFixed(1)}°C`;
 
-                if(wsEl) wsEl.style.display = 'none';
-                if(wdgEl) wdgEl.style.display = 'grid';
-                if(wvbEl) wvbEl.style.display = 'block';
-                if(wfEl) wfEl.style.display = 'block';
+                const gust = cur.wind_gusts_10m != null ? `, gusts ${Math.round(cur.wind_gusts_10m)}` : '';
+                document.getElementById('wind-speed').textContent = `${Math.round(cur.wind_speed_10m)} mph${gust}`;
 
+                const cardinal = getCardinalDirection(cur.wind_direction_10m);
+                document.getElementById('wind-direction-text').textContent = `${Math.round(cur.wind_direction_10m)}° ${cardinal}`;
+
+                document.getElementById('sky-condition').textContent = wx.text;
+                document.getElementById('precipitation').textContent = `${(cur.precipitation ?? 0).toFixed(1)} mm`;
+
+                // Open-Meteo reports local station time like "2026-10-22T11:00"
+                document.getElementById('observation-time').textContent = cur.time
+                    ? new Date(cur.time).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+                    : '--';
+                document.getElementById('weather-refresh-time').textContent = `Last Updated: ${new Date().toLocaleTimeString()}`;
+
+                // Wind direction is "from"; +180 points the arrow along the flow
+                document.getElementById('wind-arrow').style.transform = `rotate(${cur.wind_direction_10m + 180}deg)`;
+
+                document.getElementById('weather-status').hidden = true;
+                document.getElementById('weather-data-grid').style.display = 'grid';
+                document.getElementById('wind-visualization-block').style.display = 'block';
+                document.querySelector('.weather-footer').style.display = 'block';
             } catch (e) {
                 console.error(e);
+                if (reqId !== weatherRequestId) return;
+                const wsEl = document.getElementById('weather-status');
+                wsEl.hidden = false;
+                wsEl.classList.add('error');
+                wsEl.textContent = 'Weather data could not be loaded. It will retry in 5 minutes.';
             }
         }
 
-        // Fetch NOAA Tide Gauge Data (Side Panels)
+        // --- NOAA tide gauges (side panel) ---
         async function updateTideGauge(stationKey) {
             const stationId = STATIONS[stationKey].id;
-            const baseUrl = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
-            
-            // 1. Get Current Water Level - MLLW for Gauges
+
+            // 1. Current water level (MLLW)
             const levelParams = new URLSearchParams({
                 date: 'latest',
                 station: stationId,
                 product: 'water_level',
-                datum: 'MLLW', 
+                datum: 'MLLW',
                 time_zone: 'lst_ldt',
                 units: 'english',
                 format: 'json'
             });
 
-            // 2. Get Predictions (Next Highs/Lows) - MLLW for Gauges
-            // Fetching 48 hours to ensure we catch 4 events
+            // 2. Next highs/lows (MLLW), 48+ hours to guarantee 4 events
             const today = new Date();
             const dayAfterTomorrow = new Date(today);
             dayAfterTomorrow.setDate(today.getDate() + 2);
-            
+
             const predParams = new URLSearchParams({
                 begin_date: formatNoaaDate(today),
                 end_date: formatNoaaDate(dayAfterTomorrow),
                 station: stationId,
                 product: 'predictions',
                 datum: 'MLLW',
-                interval: 'hilo', 
+                interval: 'hilo',
                 time_zone: 'lst_ldt',
                 units: 'english',
                 format: 'json'
             });
 
+            const currentLevelEl = document.getElementById(`${stationKey}-current-level`);
+            const obsTimeEl = document.getElementById(`${stationKey}-obs-time`);
+            const predictionsListEl = document.getElementById(`${stationKey}-predictions-list`);
+            const refreshTimeEl = document.getElementById(`${stationKey}-refresh-time`);
+
             try {
                 const [levelResp, predResp] = await Promise.all([
-                    fetch(`${baseUrl}?${levelParams}`),
-                    fetch(`${baseUrl}?${predParams}`)
+                    fetch(`${NOAA_BASE}?${levelParams}`),
+                    fetch(`${NOAA_BASE}?${predParams}`)
                 ]);
-
                 const levelData = await levelResp.json();
                 const predData = await predResp.json();
 
-                // Update Current Level
-                const currentLevelEl = document.getElementById(`${stationKey}-current-level`);
-                const predictionsListEl = document.getElementById(`${stationKey}-predictions-list`);
-                const refreshTimeEl = document.getElementById(`${stationKey}-refresh-time`);
-
                 if (levelData.data && levelData.data.length > 0) {
-                    const val = parseFloat(levelData.data[0].v);
-                    currentLevelEl.textContent = val.toFixed(2);
-                    refreshTimeEl.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                    const obs = levelData.data[0];
+                    currentLevelEl.textContent = parseFloat(obs.v).toFixed(2);
+                    obsTimeEl.textContent = `Observed ${shortTime(parseNoaaTime(obs.t))} local station time`;
                 } else {
-                     currentLevelEl.textContent = "N/A";
+                    currentLevelEl.textContent = 'N/A';
+                    obsTimeEl.textContent = 'No recent observation reported';
                 }
+                refreshTimeEl.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 
-                // Update Predictions List (Next 4 Events)
                 if (predData.predictions && predData.predictions.length > 0) {
                     const now = new Date();
-                    const futurePreds = predData.predictions.filter(p => new Date(p.t) > now);
-                    const nextEvents = futurePreds.slice(0, 4); // Take next 4 events
+                    const nextEvents = predData.predictions
+                        .filter(p => parseNoaaTime(p.t) > now)
+                        .slice(0, 4);
 
-                    if(nextEvents.length > 0) {
-                        const html = nextEvents.map(p => {
-                            const label = p.type === 'H' ? 'High Tide' : 'Low Tide';
-                            const className = p.type === 'H' ? 'high-tide' : 'low-tide';
-                            const t = new Date(p.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                            const level = parseFloat(p.v).toFixed(1); 
-                            // Structure: Colored Label | Normal Level | Time
+                    if (nextEvents.length > 0) {
+                        predictionsListEl.innerHTML = nextEvents.map(p => {
+                            const isHigh = p.type === 'H';
+                            const d = parseNoaaTime(p.t);
+                            const sameDay = d.toDateString() === now.toDateString();
+                            const when = sameDay ? shortTime(d) : `${d.toLocaleDateString([], { weekday: 'short' })} ${shortTime(d)}`;
                             return `<li>
-                                <span class="${className}">${label}</span> 
-                                <span>${level} ft</span>
-                                <span class="time">${t}</span>
+                                <span class="${isHigh ? 'high-tide' : 'low-tide'}"><i class="fas fa-arrow-${isHigh ? 'up' : 'down'}" aria-hidden="true"></i>${isHigh ? 'High' : 'Low'} tide</span>
+                                <span>${parseFloat(p.v).toFixed(1)} ft</span>
+                                <span class="time">${when}</span>
                             </li>`;
                         }).join('');
-                        predictionsListEl.innerHTML = html;
                     } else {
                         predictionsListEl.innerHTML = '<li>No immediate data</li>';
                     }
                 }
-
             } catch (error) {
                 console.error(`Error fetching data for ${stationKey}:`, error);
+                currentLevelEl.textContent = '--';
+                obsTimeEl.textContent = 'NOAA data could not be loaded. Retrying in 6 minutes.';
             }
         }
 
-        // Fetch Main Chart Data
+        // --- Main chart ---
         async function updateMainChart() {
+            const reqId = ++chartRequestId;
             const stationKey = activeChartStation;
-            const stationId = STATIONS[stationKey].id; 
+            const stationId = STATIONS[stationKey].id;
             const stationName = STATIONS[stationKey].name;
-            const baseUrl = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
-            
-            // Dynamically update the title and footer text
-            const titleEl = document.getElementById('main-chart-title');
-            const footerEl = document.getElementById('main-chart-footer');
-            if (titleEl) titleEl.textContent = `${stationName} Water Level Time Series (NAVD88)`;
-            if (footerEl) footerEl.textContent = `Data source: NOAA Tides & Currents (Station ${stationId}). Water level datum: NAVD88. Time zone: LST/LDT.`;
 
-            // Dates: Past 24 hours, Future 24 hours
+            document.getElementById('main-chart-title').textContent = `${stationName} Water Level Time Series (NAVD88)`;
+            document.getElementById('main-chart-footer').textContent =
+                `Data source: NOAA Tides & Currents (Station ${stationId}). Water level datum: NAVD88. Time zone: LST/LDT.`;
+
             const now = new Date();
             const yesterday = new Date(now); yesterday.setHours(now.getHours() - 24);
             const tomorrow = new Date(now); tomorrow.setHours(now.getHours() + 24);
 
-            // 1. Observed Water Level (Last 24h) - NAVD88
+            // 1. Observed water level, NAVD88. end_date = tomorrow so NOAA doesn't cut off at 00:00 today.
             const obsParams = new URLSearchParams({
                 begin_date: formatNoaaDate(yesterday),
-                // FIX: Use 'tomorrow' for end_date to encompass the full current day, 
-                // otherwise NOAA API cuts off data at 00:00 of current day.
-                end_date: formatNoaaDate(tomorrow), 
+                end_date: formatNoaaDate(tomorrow),
                 station: stationId,
                 product: 'water_level',
-                datum: 'NAVD', 
+                datum: 'NAVD',
                 time_zone: 'lst_ldt',
                 units: 'english',
                 format: 'json'
             });
 
-            // 2. Predicted Water Level (Last 24h + Next 24h) - NAVD88
+            // 2. Predicted water level, NAVD88
             const predParams = new URLSearchParams({
-                begin_date: formatNoaaDate(yesterday), 
+                begin_date: formatNoaaDate(yesterday),
                 end_date: formatNoaaDate(tomorrow),
                 station: stationId,
                 product: 'predictions',
@@ -877,105 +792,149 @@
                 format: 'json'
             });
 
+            const statusEl = document.getElementById('chart-status');
+
             try {
                 const [obsResp, predResp] = await Promise.all([
-                    fetch(`${baseUrl}?${obsParams}`),
-                    fetch(`${baseUrl}?${predParams}`)
+                    fetch(`${NOAA_BASE}?${obsParams}`),
+                    fetch(`${NOAA_BASE}?${predParams}`)
                 ]);
-
                 const obsData = await obsResp.json();
                 const predData = await predResp.json();
+                if (reqId !== chartRequestId) return; // a newer tab was selected
 
-                const measuredPoints = [];
-                if (obsData.data) {
-                    obsData.data.forEach(d => {
-                        measuredPoints.push({ x: new Date(d.t), y: parseFloat(d.v) });
-                    });
-                }
+                const measuredPoints = (obsData.data || []).map(d => ({ x: parseNoaaTime(d.t), y: parseFloat(d.v) }));
+                const predictedPoints = (predData.predictions || []).map(d => ({ x: parseNoaaTime(d.t), y: parseFloat(d.v) }));
 
-                const predictedPoints = [];
-                if (predData.predictions) {
-                    predData.predictions.forEach(d => {
-                        predictedPoints.push({ x: new Date(d.t), y: parseFloat(d.v) });
-                    });
-                }
-
-                // Update Chart
-                const chart = Chart.getChart("water-level-chart");
+                const chart = typeof Chart !== 'undefined' ? Chart.getChart('water-level-chart') : null;
                 if (chart) {
                     chart.data.datasets[0].data = measuredPoints;
                     chart.data.datasets[1].data = predictedPoints;
+                    chart.options.scales.x.min = yesterday.getTime();
+                    chart.options.scales.x.max = tomorrow.getTime();
                     chart.update();
                 }
 
+                if (!measuredPoints.length && !predictedPoints.length) {
+                    statusEl.hidden = false;
+                    statusEl.classList.add('error');
+                    statusEl.textContent = 'NOAA returned no data for this station. It will retry in 6 minutes.';
+                } else {
+                    statusEl.hidden = true;
+                }
             } catch (error) {
-                console.error("Error fetching chart data:", error);
+                console.error('Error fetching chart data:', error);
+                if (reqId !== chartRequestId) return;
+                statusEl.hidden = false;
+                statusEl.classList.add('error');
+                statusEl.textContent = 'Water level data could not be loaded. It will retry in 6 minutes.';
             }
         }
+
+        // Draws a dotted "Now" line on the chart
+        const nowLinePlugin = {
+            id: 'nowLine',
+            afterDatasetsDraw(chart) {
+                const x = chart.scales.x;
+                const t = Date.now();
+                if (!x || t < x.min || t > x.max) return;
+                const px = x.getPixelForValue(t);
+                const { top, bottom } = chart.chartArea;
+                const c = chart.ctx;
+                c.save();
+                c.strokeStyle = 'rgba(19, 37, 58, 0.55)';
+                c.lineWidth = 1.25;
+                c.setLineDash([2, 3]);
+                c.beginPath();
+                c.moveTo(px, top);
+                c.lineTo(px, bottom);
+                c.stroke();
+                c.setLineDash([]);
+                c.fillStyle = '#13253A';
+                c.font = '600 11px "Public Sans", sans-serif';
+                c.fillText('Now', px + 5, top + 12);
+                c.restore();
+            }
+        };
 
         // --- Initialization ---
         function initChart() {
             const ctx = document.getElementById('water-level-chart');
-            if (ctx) {
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: 'Measured Level (ft)',
-                                data: [], 
-                                borderColor: '#2980B9',
-                                backgroundColor: '#2980B9',
-                                borderWidth: 2,
-                                pointRadius: 0,
-                                pointHoverRadius: 4,
-                                tension: 0.1,
-                                spanGaps: true
-                            },
-                            {
-                                label: 'Predicted Level (ft)',
-                                data: [],
-                                borderColor: '#C0392B',
-                                backgroundColor: '#C0392B',
-                                borderWidth: 2,
-                                borderDash: [4, 4],
-                                pointRadius: 0,
-                                pointHoverRadius: 4,
-                                tension: 0.1
-                            }
-                        ]
+            if (!ctx) return;
+
+            // If the Chart.js CDN is unreachable, keep the gauges and weather working
+            if (typeof Chart === 'undefined') {
+                const statusEl = document.getElementById('chart-status');
+                statusEl.hidden = false;
+                statusEl.classList.add('error');
+                statusEl.textContent = 'The charting library could not be loaded. Refresh the page to try again.';
+                return;
+            }
+
+            Chart.defaults.font.family = '"Public Sans", sans-serif';
+            Chart.defaults.color = '#66788A';
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Measured Level (ft)',
+                            data: [],
+                            borderColor: '#2B6A88',
+                            backgroundColor: 'rgba(43, 106, 136, 0.10)',
+                            fill: 'origin',
+                            borderWidth: 2.25,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            tension: 0.1,
+                            spanGaps: true
+                        },
+                        {
+                            label: 'Predicted Level (ft)',
+                            data: [],
+                            borderColor: '#B5483A',
+                            backgroundColor: '#B5483A',
+                            borderWidth: 1.75,
+                            borderDash: [5, 4],
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'hour', stepSize: 6, displayFormats: { hour: 'MMM d, h a' } },
+                            title: { display: true, text: 'Time (LST/LDT)' },
+                            ticks: { maxRotation: 0, autoSkip: true },
+                            grid: { color: '#EDF1F3' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Water Level (ft, NAVD88)' },
+                            grid: { color: '#EDF1F3' }
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: { unit: 'hour', stepSize: 6 },
-                                title: { display: true, text: 'Time (LST/LDT)' },
-                                ticks: { maxRotation: 0, autoSkip: true }
-                            },
-                            y: {
-                                title: { display: true, text: 'Water Level (ft)' },
-                            }
-                        },
-                        plugins: {
-                            legend: { display: true, position: 'top' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' ft';
-                                    }
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#13253A',
+                            padding: 10,
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' ft';
                                 }
                             }
                         }
                     }
-                });
-            }
+                },
+                plugins: [nowLinePlugin]
+            });
         }
 
         // Start Application
@@ -992,7 +951,6 @@
             updateTideGauge('wilmington');
             updateMainChart();
         }, 360000); // 6 min tide data refresh
-
     </script>
 </body>
 </html>

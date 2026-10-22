@@ -5,757 +5,1420 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="4aiMBuEc4N-KX4FhNklW1AZQ24VfWf_KmjH5ZE15EyU" />
 
-    <meta name="description" content="The personal portfolio and resume of Ryan McCune, a coastal engineer specializing in coastal flooding and community engaged research.">
-    <meta name="keywords" content="Ryan McCune, NC State University, NCSU, North Carolina State, Coastal Engineer, Portfolio, Research">
+    <meta name="description" content="The personal portfolio and resume of Ryan McCune, a coastal engineer specializing in coastal flooding, numerical modeling, and community engaged research.">
+    <meta name="keywords" content="Ryan McCune, NC State University, NCSU, North Carolina State, Coastal Engineer, Coastal Flooding, ADCIRC, SFINCS, Sunny Day Flooding, Portfolio, Research">
     <meta name="author" content="Ryan McCune">
-    
+    <meta name="theme-color" content="#13253A">
+
+    <!-- Link previews (LinkedIn, Slack, etc.) -->
+    <meta property="og:title" content="Ryan McCune | Coastal Engineer">
+    <meta property="og:description" content="Coastal engineer and PhD student at NC State studying chronic, sunny day flooding in coastal North Carolina.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/banner_image.jpg">
+
     <title>Ryan McCune | Coastal Engineer</title>
 
     <link rel="icon" type="image/x-icon" href="assets/coastal-hazard.ico">
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+
     <style>
-        /* --- COPY OF YOUR STYLE.CSS --- */
-        
-        /* Basic Setup */
+        /* =========================================================
+           Design tokens
+           Palette is drawn from nautical charts and estuaries:
+           chart ink, shoal tint, sound blue, deep water, and a
+           flood gold borrowed from NWS flood-category colors.
+           ========================================================= */
         :root {
-            --sidebar-width: 300px;
-            --main-bg: #fdfdfd;
-            --sidebar-bg: #7f93a9;
-            --text-color: #000000;
-            --link-color: #8C7D61;
-            --border-color: #9CA3AA;
+            --ink: #13253A;
+            --ink-2: #3E5165;
+            --ink-3: #66788A;
+            --paper: #F5F7F8;
+            --surface: #FFFFFF;
+            --line: #D8E0E5;
+            --shoal: #DCEBF1;
+            --sound: #2B6A88;
+            --sound-dark: #1F5470;
+            --deep: #163E56;
+            --flood: #D9A43A;
+            --flood-ink: #7D5A14;
+            --marsh: #DFE6D0;
+
+            --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+            --sans: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+            --max: 1120px;
+            --gutter: clamp(1rem, 4vw, 2.5rem);
+            --header-h: 64px;
         }
 
-        /* Smooth scrolling for anchor links */
+        *, *::before, *::after { box-sizing: border-box; }
+
         html {
             scroll-behavior: smooth;
+            scroll-padding-top: calc(var(--header-h) + 12px);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            background-color: var(--main-bg);
-            color: var(--text-color);
+            font-family: var(--sans);
+            font-size: 1.0625rem;
+            line-height: 1.65;
+            color: var(--ink);
+            background: var(--paper);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- Sidebar Styling --- */
-        #sidebar {
-            position: fixed;
+        img, video { max-width: 100%; display: block; }
+
+        a { color: var(--sound); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+        a:hover { color: var(--deep); }
+
+        :focus-visible {
+            outline: 2px solid var(--flood);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        .wrap {
+            max-width: var(--max);
+            margin: 0 auto;
+            padding: 0 var(--gutter);
+        }
+
+        .skip-link {
+            position: absolute;
+            left: -9999px;
             top: 0;
-            left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem;
-            box-sizing: border-box;
+            background: var(--ink);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            z-index: 2000;
+        }
+        .skip-link:focus { left: 1rem; top: 1rem; }
+
+        /* ---------- Type ---------- */
+        h1, h2, h3 {
+            font-family: var(--serif);
+            font-weight: 600;
+            line-height: 1.15;
+            margin: 0;
+            letter-spacing: -0.005em;
+        }
+
+        h2 { font-size: clamp(2rem, 3.4vw, 2.6rem); }
+        h3 { font-size: 1.35rem; }
+
+        .lede {
+            color: var(--ink-2);
+            max-width: 62ch;
+            margin: 0.75rem 0 0;
+        }
+
+        /* ---------- Header ---------- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: var(--header-h);
+            background: rgba(245, 247, 248, 0.88);
+            backdrop-filter: saturate(150%) blur(10px);
+            -webkit-backdrop-filter: saturate(150%) blur(10px);
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        .site-header.scrolled { border-bottom-color: var(--line); }
+
+        .site-header .wrap {
+            height: 100%;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
-            z-index: 1000; /* Ensure sidebar stays on top */
+            justify-content: space-between;
+            gap: 1.5rem;
         }
 
-        #sidebar header {
-            margin-bottom: 2rem;
-        }
-
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 5px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-        }
-
-        #sidebar h1 {
-            margin: 0.5rem 0 0.25rem;
-            font-size: 1.75rem;
-            color: #ffffff;
+        .brand {
+            font-family: var(--serif);
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--ink);
+            text-decoration: none;
             white-space: nowrap;
         }
+        .brand:hover { color: var(--ink); }
 
-        #sidebar p {
-            font-size: 1rem;
-            color: #e0e0e0;
-        }
+        /* min-width: 0 lets the nav shrink and scroll on phones instead of widening the page */
+        .site-header nav { min-width: 0; }
 
-        .pronouns {
-            font-size: 0.9rem;
-            font-weight: 400;
-            font-style: italic;
-            color: #d0d0d0;
-            margin-left: 0rem;
-        }
-
-        /* Nav Links */
         .nav-links {
             list-style: none;
-            padding: 0;
+            display: flex;
+            gap: 0.25rem;
             margin: 0;
-            flex-grow: 1;
-        }
-
-        .nav-links li {
-            margin: 1.25rem 0;
+            padding: 0;
         }
 
         .nav-links a {
+            display: block;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            color: var(--ink-2);
             text-decoration: none;
-            color: #ffffff;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 500;
+            white-space: nowrap;
+        }
+        .nav-links a:hover { color: var(--ink); background: rgba(19, 37, 58, 0.06); }
+        .nav-links .nav-cv {
+            color: var(--sound);
+            border: 1px solid rgba(43, 106, 136, 0.35);
+            margin-left: 0.35rem;
+        }
+        .nav-links .nav-cv:hover { background: var(--sound); color: #fff; }
+
+        /* ---------- Hero with mesh ---------- */
+        .hero {
+            position: relative;
+            min-height: min(720px, 88vh);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: var(--paper);
+            border-bottom: 1px solid var(--line);
         }
 
-        .nav-links a:hover {
-            color: var(--link-color);
-        }
-
-        /* Social Links */
-        .social-links {
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            font-size: 1.5rem;
-            margin: 0 0.75rem;
-            color: #ffffff;
-            text-decoration: none;
-        }
-
-        .social-links a:hover {
-            color: var(--link-color);
-        }
-
-        /* --- Main Content Styling --- */
-        #content {
-            margin-left: var(--sidebar-width); 
-            padding: 0 0 3rem 0;
-        }
-
-        #content section {
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 4rem;
-            padding: 1rem 3rem 2rem 3rem; 
-            box-sizing: border-box;
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        a {
-            color: var(--link-color);
-        }
-
-        /* --- Banner Image Styling --- */
-        .banner-image {
+        #mesh {
+            position: absolute;
+            inset: 0;
             width: 100%;
-            height: 250px;
-            object-fit: cover;
-            margin-bottom: 2rem;
+            height: 100%;
         }
 
-        /* --- TOGGLE SWITCH STYLING (NEW) --- */
-        .about-header {
+        /* Fades the mainland side of the mesh so text stays readable */
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(245,247,248,0.96) 0%, rgba(245,247,248,0.88) 38%, rgba(245,247,248,0) 60%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero .wrap { position: relative; z-index: 2; width: 100%; }
+
+        .hero-copy {
+            max-width: 540px;
+            padding: 4.5rem 0 5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 6.4vw, 5rem);
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+        }
+
+        .pronouns {
+            display: inline-block;
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--ink-3);
+            letter-spacing: 0;
+            margin-left: 0.35rem;
+            vertical-align: middle;
+        }
+
+        .hero-role {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--sound-dark);
+            margin: 1rem 0 0;
+        }
+
+        .hero-summary {
+            font-size: 1.1rem;
+            color: var(--ink-2);
+            margin: 0.9rem 0 0;
+            max-width: 46ch;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.7rem 1.15rem;
+            border-radius: 8px;
+            font-family: var(--sans);
+            font-weight: 600;
+            font-size: 0.98rem;
+            text-decoration: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+        .btn-primary { background: var(--ink); color: #fff; }
+        .btn-primary:hover { background: var(--deep); color: #fff; }
+        .btn-ghost { background: rgba(255,255,255,0.75); color: var(--ink); border-color: var(--line); }
+        .btn-ghost:hover { border-color: var(--ink-3); color: var(--ink); background: #fff; }
+
+        .hero-social {
+            display: flex;
+            gap: 1.1rem;
+            margin-top: 1.75rem;
+        }
+        .hero-social a { color: var(--ink-3); font-size: 1.25rem; }
+        .hero-social a:hover { color: var(--ink); }
+
+        /* Live readout for the mesh animation */
+        .mesh-readout {
+            position: absolute;
+            right: var(--gutter);
+            bottom: 1.5rem;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 0.75rem 0.95rem;
+            font-size: 0.82rem;
+            color: var(--ink-2);
+            max-width: 290px;
+            backdrop-filter: blur(4px);
+        }
+        .mesh-readout .level {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            color: var(--ink);
+            font-size: 0.95rem;
+        }
+        .legend { display: flex; flex-wrap: wrap; gap: 0.35rem 0.85rem; margin: 0.4rem 0 0.35rem; }
+        .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .swatch { width: 11px; height: 11px; border-radius: 2px; display: inline-block; border: 1px solid rgba(19,37,58,0.15); }
+        .mesh-readout p { margin: 0; line-height: 1.4; }
+        .mesh-readout .note { color: var(--ink-3); }
+
+        /* ---------- Sections ---------- */
+        .section { padding: clamp(4rem, 8vw, 6.5rem) 0; }
+        .section + .section { border-top: 1px solid var(--line); }
+        .section-head { margin-bottom: 2.5rem; }
+
+        /* ---------- About ---------- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: clamp(2rem, 5vw, 4rem);
+            align-items: start;
+        }
+
+        .profile-pic {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid #fff;
+            box-shadow: 0 0 0 1px var(--line);
+        }
+        .photo-credit { font-size: 0.8rem; color: var(--ink-3); margin: 0.75rem 0 0; }
+
+        .about-head {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end; /* Aligns switch with bottom of H2 text */
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
         }
 
-        /* Override standard H2 in this container to remove its individual border */
-        .about-header h2 {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
-            flex-grow: 1;
-        }
+        .bio-controls { display: flex; align-items: center; gap: 0.5rem; }
 
-        .bio-switch-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: #666;
-            padding-bottom: 5px; /* Alignment adjustment */
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
-
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-        input:checked + .slider {
-            background-color: var(--sidebar-bg); /* Use your theme color */
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--sidebar-bg);
-        }
-
-        input:checked + .slider:before {
-            -webkit-transform: translateX(24px);
-            -ms-transform: translateX(24px);
-            transform: translateX(24px);
-        }
-
-        /* Rounded sliders */
-        .slider.round {
-            border-radius: 34px;
-        }
-
-        .slider.round:before {
-            border-radius: 50%;
-        }
-
-        /* Logic classes */
-        .hidden-text {
-            display: none;
-        }
-        
-        /* Fade animation for smoother toggle */
-        .bio-text {
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-
-        /* --- Project Card Grid --- */
-        .project-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; 
-            gap: 1.5rem;
-        }
-
-        .project-card {
-            border: 1px solid var(--border-color);
+        .segmented {
+            display: inline-flex;
+            background: #E8EDF0;
             border-radius: 8px;
+            padding: 3px;
+        }
+        .segmented button {
+            font-family: var(--sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink-3);
+            background: transparent;
+            border: 0;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .segmented button[aria-pressed="true"] {
             background: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            color: var(--ink);
+            box-shadow: 0 1px 2px rgba(19,37,58,0.12);
+        }
+
+        .icon-btn {
+            font-family: var(--sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink-2);
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 0.42rem 0.75rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .icon-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+
+        .bio-text p { max-width: 66ch; margin: 0 0 1rem; }
+        .bio-text { animation: fadeIn 0.35s ease; }
+        .hidden-text { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .facts {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem 2rem;
+            margin: 2rem 0 0;
+            padding: 1.5rem 0 0;
+            border-top: 1px solid var(--line);
+        }
+        .facts div { display: flex; gap: 0.85rem; }
+        .facts i { color: var(--sound); width: 1.2rem; margin-top: 0.3rem; text-align: center; }
+        .facts dt { font-weight: 600; font-size: 0.95rem; }
+        .facts dd { margin: 0.1rem 0 0; color: var(--ink-2); font-size: 0.95rem; line-height: 1.5; }
+
+        /* ---------- Research ---------- */
+        .project {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: clamp(1.5rem, 4vw, 3.5rem);
+            align-items: center;
+            padding: 2.5rem 0;
+        }
+        .project + .project { border-top: 1px solid var(--line); }
+        .project:nth-of-type(even) .project-media { order: 2; }
+
+        .project-media {
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--shoal);
+            aspect-ratio: 16 / 10;
+            border: 1px solid var(--line);
+        }
+        .project-media img { width: 100%; height: 100%; object-fit: cover; }
+
+        .project h3 { font-size: clamp(1.4rem, 2.2vw, 1.7rem); margin-bottom: 0.85rem; }
+        .project p { color: var(--ink-2); margin: 0 0 0.9rem; max-width: 60ch; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+        .tags li {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--sound-dark);
+            background: var(--shoal);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        .text-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-right: 1.25rem;
+        }
+        .text-link:hover { text-decoration: underline; }
+
+        .methods { margin-top: 3rem; }
+        .methods h3 { margin-bottom: 1.25rem; }
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1.75rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .methods-grid li { border-top: 3px solid var(--ink); padding-top: 1rem; }
+        .methods-grid li:nth-child(2) { border-top-color: var(--sound); }
+        .methods-grid li:nth-child(3) { border-top-color: #6F9AAE; }
+        .methods-grid li:nth-child(4) { border-top-color: var(--flood); }
+        .methods-grid strong { display: block; font-size: 1rem; margin-bottom: 0.35rem; }
+        .methods-grid span { display: block; color: var(--ink-2); font-size: 0.93rem; line-height: 1.55; }
+
+        /* ---------- Live band ---------- */
+        .live {
+            background: var(--deep);
+            color: #fff;
+            padding: clamp(3rem, 6vw, 4.5rem) 0;
+            position: relative;
             overflow: hidden;
         }
-
-        .project-card img,
-        .project-card video {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
+        .live::after {
+            /* faint contour lines, like a bathymetric chart */
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-radial-gradient(circle at 85% 120%, transparent 0 38px, rgba(255,255,255,0.05) 38px 39px);
+            pointer-events: none;
         }
-
-        .project-card h3 {
-            font-size: 1.25rem;
-            margin: 1rem 1.5rem 0.5rem;
-        }
-
-        .project-card p {
-            margin: 0 1.5rem 1rem;
-            font-size: 0.95rem;
-            color: #555;
-        }
-
-        .project-card p:last-child {
-            margin-bottom: 1.5rem;
-        }
-
-        /* --- Parallax "Cutout" Window --- */
-        .parallax-window {
-            height: 200px; 
-            /* Placeholder background for the demo */
-            background-color: #7f93a9;
-            background-image: url('assets/banner_image.jpg');
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            margin: 4rem 0 1rem 0;
-        }
-
-        .parallax-window:first-child {
-            height: 450px;
-            margin-top: 0;
-        }
-
-        /* --- Contact Section --- */
-        #content #contact {
-            max-width: 100%;
-            margin-left: 0;
-            margin-right: 0;
-            background-image: url('assets/banner_image.jpg');
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            padding: 6rem 2rem; 
-            margin-bottom: 0; 
-        }
-
-        .contact-card {
-            background-color: #9CA3AA;
-            color: #f1f1f1;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 3rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        .contact-card h2 {
-            border-bottom-color: #666; 
-            color: #ffffff;
-        }
-
-        .contact-card a {
-            color: #9cdbff;
-        }
-
-        .copyright {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #666;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #f1f1f1;
-        }
-
-        /* --- News Reel Styling --- */
-        .news-wrapper {
+        .live .wrap {
             position: relative;
-            display: flex;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr auto;
+            gap: 2rem;
             align-items: center;
         }
+        .live h2 { font-size: clamp(1.6rem, 2.6vw, 2rem); }
+        .live p { margin: 0.5rem 0 0; color: rgba(255,255,255,0.78); max-width: 48ch; }
+        .live-reading { font-variant-numeric: tabular-nums; }
+        .live-value {
+            font-family: var(--serif);
+            font-size: clamp(2.6rem, 5vw, 3.4rem);
+            font-weight: 600;
+            line-height: 1;
+        }
+        .live-unit { font-size: 1rem; color: rgba(255,255,255,0.75); margin-left: 0.35rem; }
+        .live-sub { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin-top: 0.5rem; }
+        .live .btn-light { background: #fff; color: var(--deep); }
+        .live .btn-light:hover { background: var(--shoal); color: var(--deep); }
+
+        /* ---------- Publications ---------- */
+        .pubs { list-style: none; margin: 0; padding: 0; }
+        .pubs li {
+            display: grid;
+            grid-template-columns: 4.5rem 1fr;
+            gap: 1rem;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .pubs li:first-child { border-top: 1px solid var(--line); }
+        .pub-year { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+        .pub-title { font-weight: 600; display: block; margin-bottom: 0.2rem; }
+        .pub-meta { color: var(--ink-2); font-size: 0.95rem; }
+        .pub-meta em { font-style: italic; }
+        .pubs-more { margin-top: 1.25rem; }
+
+        /* ---------- News reel ---------- */
+        .news-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .reel-controls { display: flex; gap: 0.5rem; }
+
+        .scroll-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--line);
+            background: #fff;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+        }
+        .scroll-btn:hover:not(:disabled) { background: var(--ink); color: #fff; border-color: var(--ink); }
+        .scroll-btn:disabled { opacity: 0.35; cursor: default; }
 
         .news-reel {
             display: flex;
+            gap: 1.25rem;
             overflow-x: auto;
             scroll-behavior: smooth;
             scroll-snap-type: x mandatory;
-            gap: 1.5rem;
-            padding: 1rem 0.5rem;
+            padding: 0.25rem 0.25rem 1rem;
+            margin: 0 -0.25rem;
             -webkit-overflow-scrolling: touch;
-        }
-
-        .news-reel {
-            -ms-overflow-style: none;
             scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .news-reel::-webkit-scrollbar {
-            display: none;
-        }
+        .news-reel::-webkit-scrollbar { display: none; }
 
         .news-card {
-            min-width: 300px;
-            max-width: 300px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            overflow: hidden;
+            flex: 0 0 300px;
             scroll-snap-align: start;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
-
-        .news-card img, 
-        .news-card video {
+        .news-card img, .news-card video {
             width: 100%;
-            height: 180px;
+            height: 172px;
             object-fit: cover;
+            background: var(--shoal);
+        }
+        .news-card.no-media::before {
+            content: "";
             display: block;
+            height: 172px;
+            background: var(--shoal);
         }
-
         .news-content {
-            padding: 0;
-        }
-
-        .news-card h3 {
-            font-size: 1.1rem;
-            margin: 1rem 1rem 0.5rem 1rem;
-        }
-
-        .news-card p {
-            margin: 0 1rem 1rem 1rem;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .scroll-btn {
-            background-color: var(--sidebar-bg);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            padding: 1.1rem 1.15rem 1.25rem;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
+            flex-direction: column;
+            flex: 1;
+        }
+        .news-source { font-size: 0.82rem; font-weight: 600; color: var(--sound-dark); margin: 0 0 0.35rem; }
+        .news-card h3 { font-family: var(--sans); font-size: 1.05rem; font-weight: 700; line-height: 1.35; margin: 0 0 0.5rem; }
+        .news-card p.desc { font-size: 0.93rem; color: var(--ink-2); margin: 0 0 1rem; line-height: 1.5; }
+        .news-card .text-link { margin-top: auto; font-size: 0.93rem; }
+
+        /* ---------- Contact ---------- */
+        .contact {
+            position: relative;
+            background-color: var(--deep);
+            background-image: url('assets/banner_image.jpg');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            padding: clamp(5rem, 10vw, 8rem) 0;
+            color: #fff;
+        }
+        .contact::before {
+            content: "";
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            inset: 0;
+            background: linear-gradient(180deg, rgba(19,37,58,0.78), rgba(19,37,58,0.9));
+        }
+        .contact .wrap { position: relative; z-index: 1; }
+        .contact-inner { max-width: 640px; }
+        .contact h2 { color: #fff; }
+        .contact p { color: rgba(255,255,255,0.85); margin: 1rem 0 0; font-size: 1.1rem; }
+        .contact .btn { margin-top: 2rem; background: #fff; color: var(--ink); }
+        .contact .btn:hover { background: var(--shoal); }
+        .contact-social { display: flex; gap: 1.25rem; margin-top: 2rem; }
+        .contact-social a { color: rgba(255,255,255,0.85); font-size: 1.35rem; }
+        .contact-social a:hover { color: var(--flood); }
+
+        .site-footer {
+            background: var(--ink);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.88rem;
+            padding: 1.5rem 0;
+        }
+        .site-footer .wrap { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .site-footer p { margin: 0; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 960px) {
+            .methods-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .live .wrap { grid-template-columns: 1fr 1fr; }
+            .live .live-action { grid-column: 1 / -1; }
         }
 
-        .scroll-btn:hover {
-            background-color: var(--link-color);
+        @media (max-width: 820px) {
+            .site-header .wrap { gap: 0.75rem; }
+            .nav-links {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+                mask-image: linear-gradient(90deg, #000 85%, transparent);
+                padding-right: 1.5rem;
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links a { padding: 0.4rem 0.55rem; font-size: 0.9rem; }
+
+            .hero { flex-direction: column; align-items: stretch; min-height: 0; }
+            .hero::before { display: none; }
+            .hero-copy { padding: 3rem 0 2rem; max-width: none; }
+            #mesh { position: relative; height: 320px; order: 2; }
+            .hero .wrap { order: 1; }
+            .mesh-readout { right: 0.75rem; bottom: 0.75rem; max-width: 230px; font-size: 0.75rem; }
+            .mesh-readout .note { display: none; }
+
+            .about-grid { grid-template-columns: 1fr; }
+            .profile-pic { width: 160px; height: 160px; }
+            .facts { grid-template-columns: 1fr; }
+
+            .project { grid-template-columns: 1fr; }
+            .project:nth-of-type(even) .project-media { order: 0; }
+
+            .live .wrap { grid-template-columns: 1fr; }
+
+            .contact { background-attachment: scroll; }
         }
 
-        .left-btn {
-            left: -20px;
+        @media (max-width: 520px) {
+            .brand { font-size: 1.05rem; }
+            .methods-grid { grid-template-columns: 1fr; }
+            .pubs li { grid-template-columns: 1fr; gap: 0.25rem; }
+            .news-card { flex-basis: 82%; }
+            .reel-controls { display: none; }
         }
 
-        .right-btn {
-            right: -20px;
-        }
-
-        /* --- Responsive --- */
-        @media (max-width: 900px) {
-            #sidebar {
-                position: static; 
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            #content {
-                margin-left: 0;
-                padding: 2rem 0;
-            }
-
-            #content section {
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-
-            .project-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .banner-image {
-                height: 200px;
-                margin-bottom: 1rem;
-            }
-
-            .parallax-window, #content #contact {
-                background-attachment: scroll; 
-            }
-            
-            .parallax-window {
-                margin: 2rem 0;
-            }
-            
-            #content #contact {
-                padding: 3rem 1rem;
-            }
-
-            .scroll-btn {
-                display: none;
-            }
-            
-            .news-wrapper {
-                margin: 0 -1.5rem;
-            }
-
-            .news-reel {
-                padding: 1rem 2rem;
-            }
-            
-            .news-card {
-                min-width: 280px;
-            }
-
-            /* Stack the toggle below the title on very small screens */
-            .about-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .news-reel { scroll-behavior: auto; }
+            .bio-text { animation: none; }
         }
     </style>
 
     <script data-goatcounter="https://rtmccune.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+
+    <script>
+        // Defined in <head> because images can fail while the page is still loading.
+        // Replaces a broken news image with a tinted block instead of a broken-image icon.
+        function mediaFallback(img) {
+            const card = img.closest('.news-card');
+            if (card) card.classList.add('no-media');
+            img.remove();
+        }
+    </script>
 </head>
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
 
-    <nav id="sidebar">
-        <header>
-            <img src="assets/headshot.png" alt="Ryan McCune Headshot" class="profile-pic">
-            <h1>Ryan McCune <small class="pronouns">he/him</small></h1>
-            <p>Coastal Engineer<br>PhD Student</p>
-        </header>
+    <header class="site-header" id="siteHeader">
+        <div class="wrap">
+            <a class="brand" href="/">Ryan McCune</a>
+            <nav aria-label="Primary">
+                <ul class="nav-links">
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#research">Research</a></li>
+                    <li><a href="/#publications">Publications</a></li>
+                    <li><a href="/#news">In the News</a></li>
+                    <li><a href="/dashboard/">Dashboard</a></li>
+                    <li><a class="nav-cv" href="assets/RyanMcCune.pdf">CV</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <ul class="nav-links">
-            <li><a href="/#news">In The News</a></li>
-            <li><a href="/#research">Research</a></li>
-            <li><a href="/dashboard/">Dashboard</a></li>
-            <li><a href="assets/RyanMcCune.pdf">CV</a></li>
-        </ul>
+    <main id="main">
 
+        <!-- ===================== HERO ===================== -->
+        <section class="hero" aria-labelledby="hero-name">
+            <canvas id="mesh" aria-hidden="true"></canvas>
 
-        <footer class="social-links">
-            <a href="mailto:rmccune@ncsu.edu" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            <a href="https://github.com/rtmccune" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-            <a href="https://www.linkedin.com/in/ryan-mccune" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-            <a href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-        </footer>
-    </nav>
-
-    <main id="content">
-        
-        <div class="parallax-window"></div>
-
-        <section id="about">
-            <!-- Modified Header Area with Toggle -->
-            <div class="about-header">
-                <h2>About Me</h2>
-                <div class="bio-switch-container">
-                    <span>1st Person</span>
-                    <label class="switch">
-                        <input type="checkbox" id="bioToggle">
-                        <span class="slider round"></span>
-                    </label>
-                    <span>3rd Person</span>
+            <div class="wrap">
+                <div class="hero-copy">
+                    <h1 id="hero-name">Ryan McCune<span class="pronouns">he/him</span></h1>
+                    <p class="hero-role">Coastal engineer and PhD student, NC State University</p>
+                    <p class="hero-summary">
+                        I study chronic, "sunny day" flooding in coastal North Carolina, pairing numerical
+                        models with camera imagery, field sensors, and the knowledge of the communities who live with it.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="btn btn-primary" href="#research"><i class="fas fa-water" aria-hidden="true"></i> See my research</a>
+                        <a class="btn btn-ghost" href="/dashboard/"><i class="fas fa-chart-line" aria-hidden="true"></i> Live coastal data</a>
+                        <a class="btn btn-ghost" href="assets/RyanMcCune.pdf"><i class="fas fa-file-lines" aria-hidden="true"></i> CV</a>
+                    </div>
+                    <div class="hero-social">
+                        <a href="mailto:rmccune@ncsu.edu" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                        <a href="https://github.com/rtmccune" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/ryan-mccune" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                    </div>
                 </div>
             </div>
 
-            <!-- 1st Person Version (Default) -->
-            <div id="bio-first" class="bio-text">
-                <p>
-                I am a doctoral student and National Defense Science and Engineering Graduate Fellow at 
-                North Carolina State University, specializing in coastal engineering. My research investigates
-                the drivers and impacts of chronic, "sunny day" flooding in North Carolina's Down East region.
-                </p>
-                <p>
-                I combine hydrodynamics with advanced data science, utilizing semantic image segmentation 
-                and numerical modeling methods to validate flood predictions against real-world sensor data. 
-                As a KIETS Climate Leader and University of Delaware alumnus, I am dedicated to bridging the 
-                gap between engineering models and communities.
-                </p>
+            <div class="mesh-readout" aria-hidden="true">
+                <p>Model water level <span class="level" id="meshLevel">+0.00 m</span> <span id="meshTrend"></span></p>
+                <div class="legend">
+                    <span><i class="swatch" style="background:#2B6A88"></i>Water</span>
+                    <span><i class="swatch" style="background:#D9A43A"></i>Flooded land</span>
+                    <span><i class="swatch" style="background:#DFE6D0"></i>Marsh / upland</span>
+                </div>
+                <p class="note">An illustrative unstructured mesh: elements shrink near the shoreline and barrier island, as in an ADCIRC grid.</p>
             </div>
+        </section>
 
-            <!-- 3rd Person Version (Hidden by default) -->
-            <div id="bio-third" class="bio-text hidden-text">
-                <p>
-                Ryan McCune is a doctoral student and National Defense Science and Engineering Graduate Fellow at 
-                North Carolina State University, specializing in coastal engineering. His research investigates
-                the drivers and impacts of chronic, "sunny day" flooding in North Carolina's Down East region.
-                </p>
-                <p>
-                Ryan combines hydrodynamics with advanced data science, utilizing semantic image segmentation 
-                and numerical modeling methods to validate flood predictions against real-world sensor data. 
-                As a KIETS Climate Leader and University of Delaware alumnus, he is dedicated to bridging the 
-                gap between engineering models and communities.
+        <!-- ===================== ABOUT ===================== -->
+        <section class="section" id="about">
+            <div class="wrap about-grid">
+                <div>
+                    <img src="assets/headshot.png" alt="Ryan McCune" class="profile-pic">
+                    <p class="photo-credit">Photo by Taylor Wanbaugh</p>
+                </div>
+
+                <div>
+                    <div class="about-head">
+                        <h2>About me</h2>
+                        <div class="bio-controls">
+                            <div class="segmented" role="group" aria-label="Bio voice">
+                                <button type="button" id="bioFirstBtn" aria-pressed="true">First person</button>
+                                <button type="button" id="bioThirdBtn" aria-pressed="false">Third person</button>
+                            </div>
+                            <button type="button" class="icon-btn" id="copyBio" title="Copy the visible bio to your clipboard">
+                                <i class="far fa-copy" aria-hidden="true"></i> <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 1st Person Version (Default) -->
+                    <div id="bio-first" class="bio-text">
+                        <p>
+                        I am a doctoral student and National Defense Science and Engineering Graduate Fellow at
+                        North Carolina State University, specializing in coastal engineering. My research investigates
+                        the drivers and impacts of chronic, "sunny day" flooding in North Carolina's Down East region.
+                        </p>
+                        <p>
+                        I combine hydrodynamics with advanced data science, utilizing semantic image segmentation
+                        and numerical modeling methods to validate flood predictions against real-world sensor data.
+                        As a KIETS Climate Leader and University of Delaware alumnus, I am dedicated to bridging the
+                        gap between engineering models and communities.
+                        </p>
+                    </div>
+
+                    <!-- 3rd Person Version (Hidden by default) -->
+                    <div id="bio-third" class="bio-text hidden-text">
+                        <p>
+                        Ryan McCune is a doctoral student and National Defense Science and Engineering Graduate Fellow at
+                        North Carolina State University, specializing in coastal engineering. His research investigates
+                        the drivers and impacts of chronic, "sunny day" flooding in North Carolina's Down East region.
+                        </p>
+                        <p>
+                        Ryan combines hydrodynamics with advanced data science, utilizing semantic image segmentation
+                        and numerical modeling methods to validate flood predictions against real-world sensor data.
+                        As a KIETS Climate Leader and University of Delaware alumnus, he is dedicated to bridging the
+                        gap between engineering models and communities.
+                        </p>
+                    </div>
+
+                    <dl class="facts">
+                        <div>
+                            <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                            <div>
+                                <dt>Education</dt>
+                                <dd>PhD, Civil Engineering (coastal), NC State University, in progress<br>
+                                    B.C.E. and B.Env.E. with Distinction, University of Delaware</dd>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fas fa-award" aria-hidden="true"></i>
+                            <div>
+                                <dt>Fellowship</dt>
+                                <dd>National Defense Science and Engineering Graduate (NDSEG) Fellow, 2024</dd>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fas fa-people-group" aria-hidden="true"></i>
+                            <div>
+                                <dt>Research group</dt>
+                                <dd>Sunny Day Flooding Project, advised by Dr. Katherine Anarde</dd>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="fas fa-seedling" aria-hidden="true"></i>
+                            <div>
+                                <dt>Leadership</dt>
+                                <dd>KIETS Climate Leaders Program scholar</dd>
+                            </div>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== RESEARCH ===================== -->
+        <section class="section" id="research">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2>Research</h2>
+                    <p class="lede">My work focuses on developing and applying computational tools to understand chronic coastal flooding while engaging with community stakeholders.</p>
+                </div>
+
+                <article class="project">
+                    <div class="project-media">
+                        <img src="assets/CAM_DE_01_20240921203626_predseg_labels_rectified_depth_map_95_perc.png" alt="Georectified depth map of a flooded roadway produced from camera imagery">
+                    </div>
+                    <div>
+                        <h3>Water level extraction from flooded imagery</h3>
+                        <ul class="tags">
+                            <li>Semantic segmentation</li>
+                            <li>Georectification</li>
+                            <li>Python</li>
+                        </ul>
+                        <p>
+                            We have developed a method to extract water levels from flooded imagery alone
+                            using semantic image segmentation and image georectification techniques. We quantify
+                            the added benefit of inundation quantification and analysis from imagery
+                            as compared to in-situ sensors.
+                        </p>
+                        <p>
+                            <!-- <a class="text-link" href="#"><i class="fas fa-file-lines" aria-hidden="true"></i> Paper</a> -->
+                            <a class="text-link" href="https://github.com/rtmccune/poseidon" target="_blank" rel="noopener"><i class="fab fa-github" aria-hidden="true"></i> Code: poseidon</a>
+                        </p>
+                    </div>
+                </article>
+
+                <article class="project">
+                    <div class="project-media">
+                        <img src="assets/flood-tolerance.png" alt="A car driving through a flooded road in Carteret County">
+                    </div>
+                    <div>
+                        <h3>Chronic coastal flooding tolerance in rural North Carolina</h3>
+                        <ul class="tags">
+                            <li>Resident interviews</li>
+                            <li>Numerical modeling</li>
+                            <li>Carteret County</li>
+                        </ul>
+                        <p>
+                            Our team asked residents of rural Carteret County, NC about how they live with and tolerate
+                            frequent, sea-level rise driven flooding.
+                        </p>
+                        <p>
+                            With these interviews, we describe how people stay in place despite flooding
+                            in the context of socio-economic change, uneven governance, and population aging.
+                            We are currently combining these findings with numerical models to explore
+                            changes to perceptions of risk and impacts to long-term community livability.
+                        </p>
+                        <p>
+                            <a class="text-link" href="https://sunny-day-flooding-project.github.io/carteret-flood-tolerance/#" target="_blank" rel="noopener"><i class="fas fa-up-right-from-square" aria-hidden="true"></i> Interactive report</a>
+                        </p>
+                    </div>
+                </article>
+
+                <!-- Edit these four to match the tools you want to be known for -->
+                <div class="methods">
+                    <h3>Methods and tools</h3>
+                    <ul class="methods-grid">
+                        <li>
+                            <strong>Hydrodynamic modeling</strong>
+                            <span>ADCIRC and SFINCS simulations of tide- and surge-driven flooding, from regional meshes down to neighborhood streets.</span>
+                        </li>
+                        <li>
+                            <strong>Image-based measurement</strong>
+                            <span>Semantic segmentation and georectification that turn roadside camera images into water levels and flood depths.</span>
+                        </li>
+                        <li>
+                            <strong>Field observations</strong>
+                            <span>Networks of low-cost water level sensors and cameras that record flooding where people actually experience it.</span>
+                        </li>
+                        <li>
+                            <strong>Community-engaged research</strong>
+                            <span>Interviews, partner meetings, and shared results with Down East and coastal North Carolina communities.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== LIVE DATA BAND ===================== -->
+        <section class="live" aria-labelledby="live-title">
+            <div class="wrap">
+                <div>
+                    <h2 id="live-title">Water level at Beaufort, NC</h2>
+                    <p>Live from NOAA's Duke Marine Lab tide gauge, one of the stations I watch most closely.</p>
+                </div>
+                <div class="live-reading" aria-live="polite">
+                    <div><span class="live-value" id="liveLevel">--</span><span class="live-unit">ft above MLLW</span></div>
+                    <div class="live-sub" id="liveNext">Loading the latest observation…</div>
+                </div>
+                <div class="live-action">
+                    <a class="btn btn-light" href="/dashboard/"><i class="fas fa-chart-line" aria-hidden="true"></i> Open the dashboard</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== PUBLICATIONS ===================== -->
+        <!-- To add a paper, copy one <li> block. Newest first. -->
+        <section class="section" id="publications">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2>Selected publications</h2>
+                </div>
+                <ul class="pubs">
+                    <li>
+                        <span class="pub-year">2025</span>
+                        <div>
+                            <a class="pub-title" href="https://doi.org/10.1038/s43247-025-02326-w" target="_blank" rel="noopener">Land-based sensors reveal high frequency of coastal flooding</a>
+                            <span class="pub-meta">Hino, M., Anarde, K., Fridell, T., <strong>McCune, R.</strong>, Thelen, T., Farquhar, E., Woodard, P., and Whipple, A. <em>Communications Earth &amp; Environment</em>.</span>
+                        </div>
+                    </li>
+                </ul>
+                <p class="pubs-more">
+                    <a class="text-link" href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener"><i class="fas fa-graduation-cap" aria-hidden="true"></i> Full list on Google Scholar</a>
+                    <a class="text-link" href="assets/RyanMcCune.pdf"><i class="fas fa-file-lines" aria-hidden="true"></i> Presentations and more in my CV</a>
                 </p>
             </div>
         </section>
 
-        <div class="parallax-window"></div>
-
-        <section id="news">
-            <h2>In The News</h2>
-            <p>Recent media coverage, interviews, and articles featuring work I have been involved with. Check out other news relating to the Sunny Day Flooding Project <a href="https://sunnydayflooding.com/news/" target="_blank">here</a>!</p>
-            
-            <div class="news-wrapper">
-                <button class="scroll-btn left-btn" id="scrollLeft" aria-label="Scroll Left">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
+        <!-- ===================== NEWS ===================== -->
+        <!-- To add a story, copy one .news-card block to the top of the reel. -->
+        <section class="section" id="news">
+            <div class="wrap">
+                <div class="section-head news-head">
+                    <div>
+                        <h2>In the news</h2>
+                        <p class="lede">Recent media coverage, interviews, and articles featuring work I have been involved with. More news from the Sunny Day Flooding Project is <a href="https://sunnydayflooding.com/news/" target="_blank" rel="noopener">on the project site</a>.</p>
+                    </div>
+                    <div class="reel-controls">
+                        <button class="scroll-btn" id="scrollLeft" aria-label="Scroll news left"><i class="fas fa-chevron-left"></i></button>
+                        <button class="scroll-btn" id="scrollRight" aria-label="Scroll news right"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
 
                 <div class="news-reel" id="newsReel">
-                    
-                    <div class="news-card">
-                        <img src="assets/climate_academy_one_year.png" alt="DERN Meeting Announcement">
-                        <div class="news-content">
-                            <h3>NC State Climate and Sustainability Academy Celebrates One Year</h3>
-                            <p>The NC State Climate and Sustainability Academy has celebrated its first year!</p>
-                            <p><a href="https://climateandsustainabilityacademy.ncsu.edu/2025/12/celebrating-one-year-of-the-climate-and-sustainability-academy/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
-                        </div>
-                    </div>
 
-                    <div class="news-card">
-                        <img src="assets/DERN-fall-gathering.jpeg" alt="DERN Meeting Announcement">
+                    <article class="news-card">
+                        <img src="assets/climate_academy_one_year.png" alt="NC State Climate and Sustainability Academy one-year celebration" onerror="mediaFallback(this)">
                         <div class="news-content">
-                            <h3>DERN Meeting</h3>
-                            <p>Our team attended and presented at the recent Down East Resilience Network meeting.</p>
-                            <p><a href="https://climateandsustainabilityacademy.ncsu.edu/2025/10/in-focus-down-east-resilience-network-fall-gathering-coastal-futures-hub/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                            <p class="news-source">NC State Climate and Sustainability Academy, Dec 2025</p>
+                            <h3>The Climate and Sustainability Academy celebrates one year</h3>
+                            <p class="desc">The NC State Climate and Sustainability Academy has celebrated its first year!</p>
+                            <a class="text-link" href="https://climateandsustainabilityacademy.ncsu.edu/2025/12/celebrating-one-year-of-the-climate-and-sustainability-academy/" target="_blank" rel="noopener">Read article <i class="fas fa-up-right-from-square" aria-hidden="true"></i></a>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- Card 1 -->
-                    <div class="news-card">
-                        <img src="assets/coastal-review-hino-paper.jpg" alt="Coastal Areas Flood More Frequently" onerror="this.src='https://via.placeholder.com/400x250'">
+                    <article class="news-card">
+                        <img src="assets/DERN-fall-gathering.jpeg" alt="Down East Resilience Network fall gathering" onerror="mediaFallback(this)">
                         <div class="news-content">
-                            <h3>Coastal Review</h3>
-                            <p>Discussing our recent paper on frequency of flooding in coastal North Carolina.</p>
-                            <p><a href="https://coastalreview.org/2025/06/coastal-areas-flood-more-frequently-than-thought-study/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                            <p class="news-source">NC State Climate and Sustainability Academy, Oct 2025</p>
+                            <h3>Down East Resilience Network fall gathering</h3>
+                            <p class="desc">Our team attended and presented at the recent Down East Resilience Network meeting.</p>
+                            <a class="text-link" href="https://climateandsustainabilityacademy.ncsu.edu/2025/10/in-focus-down-east-resilience-network-fall-gathering-coastal-futures-hub/" target="_blank" rel="noopener">Read article <i class="fas fa-up-right-from-square" aria-hidden="true"></i></a>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- Card 2 -->
-                    <div class="news-card">
-                         <!-- Placeholder video source logic -->
-                        <video autoplay loop muted playsinline>
-                        <source src="assets/post-CB-flood.mp4" type="video/mp4">
+                    <article class="news-card">
+                        <img src="assets/coastal-review-hino-paper.jpg" alt="Flooded coastal road" onerror="mediaFallback(this)">
+                        <div class="news-content">
+                            <p class="news-source">Coastal Review, Jun 2025</p>
+                            <h3>Coastal areas flood more frequently than thought</h3>
+                            <p class="desc">Discussing our recent paper on frequency of flooding in coastal North Carolina.</p>
+                            <a class="text-link" href="https://coastalreview.org/2025/06/coastal-areas-flood-more-frequently-than-thought-study/" target="_blank" rel="noopener">Read article <i class="fas fa-up-right-from-square" aria-hidden="true"></i></a>
+                        </div>
+                    </article>
+
+                    <article class="news-card">
+                        <video autoplay loop muted playsinline aria-label="Video of flooding in Carolina Beach">
+                            <source src="assets/post-CB-flood.mp4" type="video/mp4">
                         </video>
                         <div class="news-content">
-                            <h3>The Washington Post</h3>
-                            <p>Coverage of flooding in one of our partner communities, Carolina Beach.</p>
-                            <p><a href="https://www.washingtonpost.com/climate-environment/interactive/2024/coastal-flooding-carolina-beach-videos/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                            <p class="news-source">The Washington Post, 2024</p>
+                            <h3>Flooding in Carolina Beach</h3>
+                            <p class="desc">Coverage of flooding in one of our partner communities, Carolina Beach.</p>
+                            <a class="text-link" href="https://www.washingtonpost.com/climate-environment/interactive/2024/coastal-flooding-carolina-beach-videos/" target="_blank" rel="noopener">Read article <i class="fas fa-up-right-from-square" aria-hidden="true"></i></a>
                         </div>
-                    </div>
+                    </article>
 
-                    <!-- Card 3 -->
-                    <div class="news-card">
-                        <img src="assets/mccune-grad-school.jpg" alt="Grad School Profile" onerror="this.src='https://via.placeholder.com/400x250'">
+                    <article class="news-card">
+                        <img src="assets/mccune-grad-school.jpg" alt="Ryan McCune graduate student profile" onerror="mediaFallback(this)">
                         <div class="news-content">
-                            <h3>NC State Grad Student Profile</h3>
-                            <p>NC State University graduate student profile.</p>
-                            <p><a href="https://grad.ncsu.edu/news/2024/04/grad-student-profile-ryan-mccune/" target="_blank">Read Article <i class="fas fa-external-link-alt"></i></a></p>
+                            <p class="news-source">NC State Graduate School, Apr 2024</p>
+                            <h3>Grad student profile: Ryan McCune</h3>
+                            <p class="desc">NC State University graduate student profile.</p>
+                            <a class="text-link" href="https://grad.ncsu.edu/news/2024/04/grad-student-profile-ryan-mccune/" target="_blank" rel="noopener">Read article <i class="fas fa-up-right-from-square" aria-hidden="true"></i></a>
                         </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== CONTACT ===================== -->
+        <section class="contact" id="contact">
+            <div class="wrap">
+                <div class="contact-inner">
+                    <h2>Get in touch</h2>
+                    <p>I am always happy to connect and collaborate on ideas, advice, or any other inquiries. The best way to get in touch is via email.</p>
+                    <a class="btn" href="mailto:rmccune@ncsu.edu"><i class="fas fa-envelope" aria-hidden="true"></i> rmccune@ncsu.edu</a>
+                    <div class="contact-social">
+                        <a href="https://github.com/rtmccune" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/ryan-mccune" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://scholar.google.com/citations?user=CnYIFHQAAAAJ&hl=en&oi=ao" target="_blank" rel="noopener" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
                     </div>
-
-                </div>
-
-                <button class="scroll-btn right-btn" id="scrollRight" aria-label="Scroll Right">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </section>
-
-        <div class="parallax-window"></div>
-
-        <section id="research">
-            <h2>Featured Work</h2>
-            <p>My work focuses on developing and applying computational tools to understand chronic coastal flooding while engaging with community stakeholders.</p>
-            
-            <div class="project-grid">
-                <div class="project-card">
-                    <img src="assets/CAM_DE_01_20240921203626_predseg_labels_rectified_depth_map_95_perc.png" alt="Flood Image Rectification">
-                    <h3>Water level extraction from flooded imagery</h3>
-                    <p>
-                        We have developed a method to extract water levels from flooded imagery alone
-                        using semantic image segmentation and image georectification techniques. We quantify 
-                        the added benefit of inundation quantification and analysis from imagery
-                        as compared to in-situ sensors. 
-                    </p>
-                    <!--<p><a href="#">Link to paper</a> &middot; <a href="#">Link to code</a></p>>-->
-                    <p><a href="https://github.com/rtmccune/poseidon" target="_blank">Link to Code</a></p>
-                </div>
-
-                <div class="project-card">
-                    <img src="assets/flood-tolerance.png" alt="Car Driving Through Flood">
-                    <h3>Chronic coastal flooding tolerance in rural North Carolina</h3>
-                    <p>
-                        Our team asked residents of rural Carteret County, NC about how they live with and tolerate
-                        frequent, sea-level rise driven flooding.
-                    </p>
-                    <p>
-                        With these interviews, we describe how people stay in place despite flooding 
-                        in the context of socio-economic change, uneven governance, and population aging.
-                        We are currently combining these findings with numerical models to explore
-                        changes to perceptions of risk and impacts to long-term community livability.
-                    </p>
-                    <p><a href="https://sunny-day-flooding-project.github.io/carteret-flood-tolerance/#" target="_blank">Interactive Report</a></p>
                 </div>
             </div>
         </section>
-
-        <section id="contact">
-            <div class="contact-card">
-                <p>I am always happy to connect and collaborate on ideas, advice, or any other inquiries.
-                    The best way to get in touch is via email.</p>
-                <div class="copyright">All text and media © Ryan McCune, unless otherwise noted. All rights reserved.
-                    <br> Profile photo by Taylor Wanbaugh.
-                </div>
-            </div>
-        </section>
-
     </main>
-    
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <p>All text and media &copy; Ryan McCune, unless otherwise noted. All rights reserved.</p>
+            <p>Profile photo by Taylor Wanbaugh.</p>
+        </div>
+    </footer>
+
 <script>
-    // --- Scroll Logic ---
+    // ---------- Helpers ----------
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // NOAA returns "YYYY-MM-DD HH:MM"; adding the "T" makes it parse in every browser (incl. Safari)
+    function parseNoaaTime(s) { return new Date(s.replace(' ', 'T')); }
+
+    function formatNoaaDate(date) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
+    }
+
+    // ---------- Header border on scroll ----------
+    const siteHeader = document.getElementById('siteHeader');
+    const onScroll = () => siteHeader.classList.toggle('scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // ---------- News reel scroll logic ----------
     const scrollContainer = document.getElementById("newsReel");
     const leftBtn = document.getElementById("scrollLeft");
     const rightBtn = document.getElementById("scrollRight");
 
-    rightBtn.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: 320, behavior: "smooth" });
-    });
+    function cardStep() {
+        const card = scrollContainer.querySelector('.news-card');
+        return card ? card.getBoundingClientRect().width + 20 : 320;
+    }
+    function updateReelButtons() {
+        const max = scrollContainer.scrollWidth - scrollContainer.clientWidth - 2;
+        leftBtn.disabled = scrollContainer.scrollLeft <= 2;
+        rightBtn.disabled = scrollContainer.scrollLeft >= max;
+    }
+    rightBtn.addEventListener("click", () => scrollContainer.scrollBy({ left: cardStep(), behavior: "smooth" }));
+    leftBtn.addEventListener("click", () => scrollContainer.scrollBy({ left: -cardStep(), behavior: "smooth" }));
+    scrollContainer.addEventListener('scroll', updateReelButtons, { passive: true });
+    window.addEventListener('resize', updateReelButtons);
+    updateReelButtons();
 
-    leftBtn.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -320, behavior: "smooth" });
-    });
-
-    // --- Bio Toggle Logic ---
-    const bioToggle = document.getElementById('bioToggle');
+    // ---------- Bio toggle logic ----------
     const bioFirst = document.getElementById('bio-first');
     const bioThird = document.getElementById('bio-third');
+    const bioFirstBtn = document.getElementById('bioFirstBtn');
+    const bioThirdBtn = document.getElementById('bioThirdBtn');
 
-    bioToggle.addEventListener('change', function() {
-        if(this.checked) {
-            // Switch is ON -> Show 3rd Person
-            bioFirst.classList.add('hidden-text');
-            bioThird.classList.remove('hidden-text');
-        } else {
-            // Switch is OFF -> Show 1st Person
-            bioThird.classList.add('hidden-text');
-            bioFirst.classList.remove('hidden-text');
+    function setBio(third) {
+        bioFirst.classList.toggle('hidden-text', third);
+        bioThird.classList.toggle('hidden-text', !third);
+        bioFirstBtn.setAttribute('aria-pressed', String(!third));
+        bioThirdBtn.setAttribute('aria-pressed', String(third));
+    }
+    bioFirstBtn.addEventListener('click', () => setBio(false));
+    bioThirdBtn.addEventListener('click', () => setBio(true));
+
+    // Copy whichever bio is visible (handy for event organizers who need a speaker bio)
+    const copyBtn = document.getElementById('copyBio');
+    copyBtn.addEventListener('click', async () => {
+        const visible = bioFirst.classList.contains('hidden-text') ? bioThird : bioFirst;
+        const text = Array.from(visible.querySelectorAll('p'))
+            .map(p => p.textContent.replace(/\s+/g, ' ').trim())
+            .join('\n\n');
+        const label = copyBtn.querySelector('span');
+        try {
+            await navigator.clipboard.writeText(text);
+            label.textContent = 'Copied';
+        } catch (e) {
+            label.textContent = 'Copy failed';
         }
+        setTimeout(() => { label.textContent = 'Copy'; }, 1800);
     });
+
+    // ---------- Live Beaufort water level ----------
+    async function loadLiveLevel() {
+        const baseUrl = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
+        const station = '8656483';
+        const today = new Date();
+        const later = new Date(today); later.setDate(today.getDate() + 2);
+
+        const levelParams = new URLSearchParams({
+            date: 'latest', station, product: 'water_level', datum: 'MLLW',
+            time_zone: 'lst_ldt', units: 'english', format: 'json'
+        });
+        const predParams = new URLSearchParams({
+            begin_date: formatNoaaDate(today), end_date: formatNoaaDate(later), station,
+            product: 'predictions', datum: 'MLLW', interval: 'hilo',
+            time_zone: 'lst_ldt', units: 'english', format: 'json'
+        });
+
+        const levelEl = document.getElementById('liveLevel');
+        const nextEl = document.getElementById('liveNext');
+
+        try {
+            const [lr, pr] = await Promise.all([
+                fetch(`${baseUrl}?${levelParams}`),
+                fetch(`${baseUrl}?${predParams}`)
+            ]);
+            const level = await lr.json();
+            const pred = await pr.json();
+
+            let parts = [];
+            if (level.data && level.data.length) {
+                const obs = level.data[0];
+                levelEl.textContent = parseFloat(obs.v).toFixed(2);
+                parts.push(`Observed ${parseNoaaTime(obs.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`);
+            } else {
+                levelEl.textContent = 'N/A';
+            }
+
+            if (pred.predictions) {
+                const now = new Date();
+                const next = pred.predictions.find(p => parseNoaaTime(p.t) > now);
+                if (next) {
+                    const kind = next.type === 'H' ? 'high' : 'low';
+                    const t = parseNoaaTime(next.t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    parts.push(`next ${kind} tide ${t} (${parseFloat(next.v).toFixed(1)} ft)`);
+                }
+            }
+            nextEl.textContent = parts.length ? parts.join(', ') : 'No recent observation from NOAA.';
+        } catch (err) {
+            console.error('Live level error:', err);
+            levelEl.textContent = '--';
+            nextEl.textContent = 'Live data is unavailable right now. The dashboard will retry automatically.';
+        }
+    }
+    loadLiveLevel();
+    setInterval(loadLiveLevel, 360000);
+
+    // =====================================================================
+    // Hero: an unstructured triangular mesh across a mainland, marsh, sound,
+    // barrier island and ocean. A tide rises and falls; land elements that
+    // fall below the water level are drawn as flooded.
+    // =====================================================================
+    (function meshHero() {
+        const canvas = document.getElementById('mesh');
+        const ctx = canvas.getContext('2d');
+        const levelEl = document.getElementById('meshLevel');
+        const trendEl = document.getElementById('meshTrend');
+
+        // Cross-shore elevation profile (fraction of width -> meters)
+        const PROFILE = [
+            [0.00, 3.4], [0.46, 1.5], [0.56, 0.75], [0.60, 0.42], [0.65, 0.18],
+            [0.67, -0.6], [0.70, -1.3], [0.76, -1.4], [0.79, -0.4],
+            [0.805, 1.6], [0.83, 1.9], [0.85, 0.9], [0.87, -1.6], [1.00, -7.0]
+        ];
+
+        const COLORS = {
+            upland: '#ECEFE6',
+            marsh: '#DFE6D0',
+            flood: '#D9A43A',
+            edge: 'rgba(19, 37, 58, 0.13)',
+            water: ['#DCEBF1', '#BCD8E4', '#94BFD2', '#6FA4BE', '#4E89A6', '#2B6A88', '#215A77', '#163E56']
+        };
+
+        let W = 0, H = 0, dpr = 1;
+        let tris = [];
+        let edgePath = null;
+        let rafId = null, visible = true, lastReadout = 0;
+        const PERIOD = 16000; // ms per tidal cycle
+        const t0 = performance.now();
+
+        function warp(x, y) {
+            // On phones the text sits above the mesh, so skip most of the mainland
+            const base = W < 700 ? 0.4 + 0.6 * (x / W) : x / W;
+            return base + 0.035 * Math.sin((y / H) * 4.2 + 0.6) + 0.015 * Math.sin((y / H) * 11.3 + 2.1);
+        }
+
+        function elevation(x, y) {
+            const u = Math.min(Math.max(warp(x, y), 0), 1);
+            let z = PROFILE[PROFILE.length - 1][1];
+            for (let i = 0; i < PROFILE.length - 1; i++) {
+                const [u0, z0] = PROFILE[i], [u1, z1] = PROFILE[i + 1];
+                if (u >= u0 && u <= u1) { z = z0 + (z1 - z0) * (u - u0) / (u1 - u0); break; }
+            }
+            // small-scale roughness so the marsh floods unevenly
+            return z + 0.12 * Math.sin(x * 0.045 + y * 0.02) * Math.cos(y * 0.06 - x * 0.01);
+        }
+
+        function spacing(x, y) {
+            const u = warp(x, y);
+            const fine = Math.max(
+                Math.exp(-Math.pow((u - 0.625) / 0.055, 2)),
+                0.95 * Math.exp(-Math.pow((u - 0.825) / 0.04, 2)),
+                0.45 * Math.exp(-Math.pow((u - 0.73) / 0.06, 2))
+            );
+            const scale = Math.min(Math.max(W / 1400, 0.55), 1.1);
+            return (48 - 34 * fine) * scale;
+        }
+
+        // Variable-density point sampling (dart throwing with a bucket grid)
+        function samplePoints() {
+            const scale = Math.min(Math.max(W / 1400, 0.55), 1.1);
+            const cell = 48 * scale;
+            const cols = Math.ceil(W / cell) + 1, rows = Math.ceil(H / cell) + 1;
+            const grid = new Array(cols * rows);
+            const pts = [];
+
+            const fits = (x, y, r) => {
+                const cx = Math.floor(x / cell), cy = Math.floor(y / cell);
+                for (let j = cy - 1; j <= cy + 1; j++) {
+                    for (let i = cx - 1; i <= cx + 1; i++) {
+                        if (i < 0 || j < 0 || i >= cols || j >= rows) continue;
+                        const b = grid[j * cols + i];
+                        if (!b) continue;
+                        for (const p of b) {
+                            const dx = p[0] - x, dy = p[1] - y;
+                            if (dx * dx + dy * dy < r * r) return false;
+                        }
+                    }
+                }
+                return true;
+            };
+            const add = (x, y) => {
+                const k = Math.floor(y / cell) * cols + Math.floor(x / cell);
+                (grid[k] || (grid[k] = [])).push([x, y]);
+                pts.push([x, y]);
+            };
+
+            // boundary points so the mesh fills the rectangle
+            for (let x = 0; x <= W; ) { add(x, 0); add(x, H); x += spacing(x, 0); }
+            for (let y = spacing(0, 0); y < H; ) { add(0, y); add(W, y); y += spacing(0, y); }
+
+            const tries = Math.round((W * H) / (14 * 14 * scale * scale)) * 3;
+            for (let n = 0; n < tries; n++) {
+                const x = Math.random() * W, y = Math.random() * H;
+                const r = spacing(x, y);
+                if (fits(x, y, r)) add(x, y);
+            }
+            return pts;
+        }
+
+        // Bowyer-Watson Delaunay triangulation
+        function triangulate(pts) {
+            const big = Math.max(W, H) * 10;
+            const P = pts.slice();
+            P.push([-big, -big], [W / 2, big * 2], [W + big * 2, -big]);
+            const s0 = P.length - 3;
+
+            function circ(a, b, c) {
+                const [ax, ay] = P[a], [bx, by] = P[b], [cx, cy] = P[c];
+                const d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+                const a2 = ax * ax + ay * ay, b2 = bx * bx + by * by, c2 = cx * cx + cy * cy;
+                const ux = (a2 * (by - cy) + b2 * (cy - ay) + c2 * (ay - by)) / d;
+                const uy = (a2 * (cx - bx) + b2 * (ax - cx) + c2 * (bx - ax)) / d;
+                return { a, b, c, x: ux, y: uy, r2: (ax - ux) ** 2 + (ay - uy) ** 2 };
+            }
+
+            let T = [circ(s0, s0 + 1, s0 + 2)];
+            for (let i = 0; i < s0; i++) {
+                const [px, py] = P[i];
+                const bad = [], keep = [];
+                for (const t of T) {
+                    ((px - t.x) ** 2 + (py - t.y) ** 2 < t.r2 ? bad : keep).push(t);
+                }
+                const edges = new Map();
+                for (const t of bad) {
+                    for (const [u, v] of [[t.a, t.b], [t.b, t.c], [t.c, t.a]]) {
+                        const key = u < v ? u + ',' + v : v + ',' + u;
+                        edges.set(key, edges.has(key) ? null : [u, v]);
+                    }
+                }
+                for (const e of edges.values()) if (e) keep.push(circ(e[0], e[1], i));
+                T = keep;
+            }
+            return T.filter(t => t.a < s0 && t.b < s0 && t.c < s0).map(t => [P[t.a], P[t.b], P[t.c]]);
+        }
+
+        function build() {
+            const rect = canvas.getBoundingClientRect();
+            W = Math.max(rect.width, 1);
+            H = Math.max(rect.height, 1);
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.round(W * dpr);
+            canvas.height = Math.round(H * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const raw = triangulate(samplePoints());
+            edgePath = new Path2D();
+            tris = raw.map(([a, b, c]) => {
+                const path = new Path2D();
+                path.moveTo(a[0], a[1]); path.lineTo(b[0], b[1]); path.lineTo(c[0], c[1]); path.closePath();
+                edgePath.addPath(path);
+                const z = (elevation(a[0], a[1]) + elevation(b[0], b[1]) + elevation(c[0], c[1])) / 3;
+                return { path, z };
+            });
+        }
+
+        function waterLevel(now) {
+            const phase = ((now - t0) % PERIOD) / PERIOD * Math.PI * 2;
+            return { eta: 0.22 + 0.5 * Math.sin(phase), rising: Math.cos(phase) > 0 };
+        }
+
+        function draw(now) {
+            const { eta, rising } = prefersReducedMotion ? { eta: 0.62, rising: true } : waterLevel(now);
+            ctx.clearRect(0, 0, W, H);
+
+            // bucket triangles by color so each color is a single fill
+            const buckets = new Map();
+            const put = (color, p) => { (buckets.get(color) || buckets.set(color, new Path2D()).get(color)).addPath(p); };
+
+            for (const t of tris) {
+                if (t.z < eta) {
+                    if (t.z > 0.05) {
+                        put(COLORS.flood, t.path);
+                    } else {
+                        const depth = eta - t.z;
+                        const k = Math.min(COLORS.water.length - 1, Math.floor(depth / 1.1));
+                        put(COLORS.water[k], t.path);
+                    }
+                } else {
+                    put(t.z < 0.9 ? COLORS.marsh : COLORS.upland, t.path);
+                }
+            }
+            for (const [color, path] of buckets) { ctx.fillStyle = color; ctx.fill(path); }
+
+            ctx.strokeStyle = COLORS.edge;
+            ctx.lineWidth = 0.75;
+            ctx.stroke(edgePath);
+
+            if (now - lastReadout > 150) {
+                lastReadout = now;
+                const sign = eta >= 0 ? '+' : '−';
+                levelEl.textContent = `${sign}${Math.abs(eta).toFixed(2)} m`;
+                trendEl.textContent = prefersReducedMotion ? '' : (rising ? '(rising)' : '(falling)');
+            }
+        }
+
+        function loop(now) {
+            draw(now);
+            if (!prefersReducedMotion && visible) rafId = requestAnimationFrame(loop);
+            else rafId = null;
+        }
+
+        function start() {
+            if (rafId === null) rafId = requestAnimationFrame(loop);
+        }
+
+        build();
+        rafId = null;
+        start();
+
+        // Pause the animation when the hero is offscreen
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(entries => {
+                visible = entries[0].isIntersecting;
+                if (visible) start();
+            }).observe(canvas);
+        }
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const r = canvas.getBoundingClientRect();
+                if (Math.abs(r.width - W) < 2 && Math.abs(r.height - H) < 2) return;
+                build();
+                draw(performance.now());
+                start();
+            }, 200);
+        });
+    })();
 </script>
 
 </body>
