@@ -402,27 +402,60 @@
         .facts dd { margin: 0.1rem 0 0; color: var(--ink-2); font-size: 0.95rem; line-height: 1.5; }
 
         /* ---------- Research ---------- */
-        .project {
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
-            gap: clamp(1.5rem, 4vw, 3.5rem);
-            align-items: center;
-            padding: 2.5rem 0;
+        /* The section is a window onto the banner photo; projects sit on it as solid tiles */
+        .section.research-band {
+            position: relative;
+            background-color: var(--deep);
+            background-image: url('assets/banner_image.jpg');
+            background-attachment: fixed;   /* parallax "window", as on the original site */
+            background-position: center;
+            background-size: cover;
+            border-top: 0;
         }
-        .project + .project { border-top: 1px solid var(--line); }
-        .project:nth-of-type(even) .project-media { order: 2; }
+        .research-band::before {
+            /* lighter than the contact overlay so the photo reads; deepens toward the bottom */
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(19,37,58,0.62) 0%, rgba(19,37,58,0.42) 45%, rgba(19,37,58,0.62) 100%);
+            pointer-events: none;
+        }
+        .research-band .wrap { position: relative; z-index: 1; }
+        .research-band .section-head h2 { color: #fff; }
+        .research-band .section-head .lede { color: rgba(255,255,255,0.9); }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        .project {
+            background: var(--surface);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 32px rgba(8, 22, 36, 0.28);
+        }
 
         .project-media {
-            border-radius: 12px;
-            overflow: hidden;
+            aspect-ratio: 16 / 9;
             background: var(--shoal);
-            aspect-ratio: 16 / 10;
-            border: 1px solid var(--line);
+            overflow: hidden;
         }
         .project-media img { width: 100%; height: 100%; object-fit: cover; }
 
-        .project h3 { font-size: clamp(1.4rem, 2.2vw, 1.7rem); margin-bottom: 0.85rem; }
-        .project p { color: var(--ink-2); margin: 0 0 0.9rem; max-width: 60ch; }
+        .project-body {
+            padding: 1.5rem 1.6rem 1.6rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .project h3 { font-size: clamp(1.3rem, 2vw, 1.55rem); margin-bottom: 0.85rem; }
+        .project p { color: var(--ink-2); margin: 0 0 0.9rem; }
+        .project .project-links { margin: auto 0 0; padding-top: 0.5rem; }
 
         .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1rem; padding: 0; list-style: none; }
         .tags li {
@@ -444,7 +477,13 @@
         }
         .text-link:hover { text-decoration: underline; }
 
-        .methods { margin-top: 3rem; }
+        .methods {
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 14px;
+            padding: 1.75rem 1.6rem;
+            box-shadow: 0 12px 32px rgba(8, 22, 36, 0.22);
+        }
         .methods h3 { margin-bottom: 1.25rem; }
         .methods-grid {
             display: grid;
@@ -656,8 +695,9 @@
             .profile-pic { width: 160px; height: 160px; }
             .facts { grid-template-columns: 1fr; }
 
-            .project { grid-template-columns: 1fr; }
-            .project:nth-of-type(even) .project-media { order: 0; }
+            .project-grid { grid-template-columns: 1fr; }
+            .section.research-band { background-attachment: scroll; }
+            .project-body, .methods { padding: 1.25rem; }
 
             .live .wrap { grid-template-columns: 1fr; }
 
@@ -829,7 +869,9 @@
                             <i class="fas fa-seedling" aria-hidden="true"></i>
                             <div>
                                 <dt>Leadership</dt>
-                                <dd>KIETS Climate Leaders Program scholar</dd>
+                                <dd>KIETS Climate Leaders Program scholar<br>
+                                    Vice President, COPRI Student Chapter at NCSU
+                                </dd>
                             </div>
                         </div>
                     </dl>
@@ -838,18 +880,19 @@
         </section>
 
         <!-- ===================== RESEARCH ===================== -->
-        <section class="section" id="research">
+        <section class="section research-band" id="research">
             <div class="wrap">
                 <div class="section-head">
                     <h2>Research</h2>
                     <p class="lede">My work focuses on developing and applying computational tools to understand chronic coastal flooding while engaging with community stakeholders.</p>
                 </div>
 
+                <div class="project-grid">
                 <article class="project">
                     <div class="project-media">
                         <img src="assets/CAM_DE_01_20240921203626_predseg_labels_rectified_depth_map_95_perc.png" alt="Georectified depth map of a flooded roadway produced from camera imagery">
                     </div>
-                    <div>
+                    <div class="project-body">
                         <h3>Water level extraction from flooded imagery</h3>
                         <ul class="tags">
                             <li>Semantic segmentation</li>
@@ -862,7 +905,7 @@
                             the added benefit of inundation quantification and analysis from imagery
                             as compared to in-situ sensors.
                         </p>
-                        <p>
+                        <p class="project-links">
                             <!-- <a class="text-link" href="#"><i class="fas fa-file-lines" aria-hidden="true"></i> Paper</a> -->
                             <a class="text-link" href="https://github.com/rtmccune/poseidon" target="_blank" rel="noopener"><i class="fab fa-github" aria-hidden="true"></i> Code: poseidon</a>
                         </p>
@@ -873,7 +916,7 @@
                     <div class="project-media">
                         <img src="assets/flood-tolerance.png" alt="A car driving through a flooded road in Carteret County">
                     </div>
-                    <div>
+                    <div class="project-body">
                         <h3>Chronic coastal flooding tolerance in rural North Carolina</h3>
                         <ul class="tags">
                             <li>Resident interviews</li>
@@ -890,11 +933,12 @@
                             We are currently combining these findings with numerical models to explore
                             changes to perceptions of risk and impacts to long-term community livability.
                         </p>
-                        <p>
+                        <p class="project-links">
                             <a class="text-link" href="https://sunny-day-flooding-project.github.io/carteret-flood-tolerance/#" target="_blank" rel="noopener"><i class="fas fa-up-right-from-square" aria-hidden="true"></i> Interactive report</a>
                         </p>
                     </div>
                 </article>
+                </div>
 
                 <!-- Edit these four to match the tools you want to be known for -->
                 <div class="methods">
